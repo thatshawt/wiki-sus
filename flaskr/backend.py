@@ -17,8 +17,12 @@ class Backend:
     def upload(self):
         pass
 
-    def sign_up(self, username, password): # DRAFT FOR SIGN_UP BUCKET
+    def sign_up(self, username, password): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
 
+        if not self.check_valid(username, password): # Check if username and password are valid characters
+            print('INVALID')
+            return 'INVALID'
+        
         bucket = self.storage_client.bucket('sus-user-pass-bucket')
         blob = bucket.blob(username.lower())
 
@@ -55,4 +59,53 @@ class Backend:
 
     def get_image(self):
         pass
+
+
+
+    def check_valid(self, username, password): # DRAFT - Verify if the username or password are a-z / A-Z , 0-9 or accepted special characters or has no spaces
+
+        if len(username) < 5 or len(password) < 8: # Length of username 5 characters or more | Password 8 or more
+            return False
+
+        username = username.lower()
+
+        valid_username = False
+        valid_password = False
+
+        for character in username:
+            ascii_value = ord(character)
+
+            if (int(ascii_value) >= 48 and int(ascii_value) <= 57) or (int(ascii_value) >= 97 and int(ascii_value) <= 122): # a-z , 0-9
+                valid_username = True
+
+            elif int(ascii_value) == 45 or int(ascii_value) == 95: # Dash or underscore ( '_', '-' )
+                valid_username = True
+
+            else:
+                valid_username = False
+                break
+
+        for character in password:
+
+            valid_password = False
+            ascii_value = ord(character)
+
+            if (int(ascii_value) >= 48 and int(ascii_value) <= 57) or (int(ascii_value) >= 97 and int(ascii_value) <= 122): # a-z, 0-9
+                valid_password = True
+
+            elif (int(ascii_value) >= 65 and int(ascii_value) <= 90): # A-Z
+                valid_password = True
+
+            elif (int(ascii_value) >= 33 and int(ascii_value) <= 42): # Some special characters
+                valid_password = True
+
+            elif int(ascii_value) == 45 or int(ascii_value) == 95: # Dash or underscore ( '_', '-' )
+                valid_username = True
+
+            else:
+                valid_password = False
+                break
+        
+
+        return valid_username and valid_password
 
