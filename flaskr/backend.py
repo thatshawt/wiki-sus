@@ -27,7 +27,7 @@ class Backend:
 
     def sign_up(self, username, password): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
 
-        if not self.check_valid(username, password): # Check if username and password are valid characters
+        if not self._check_valid(username, password): # Check if username and password are valid characters
             print('INVALID')
             return 'INVALID'
         
@@ -70,7 +70,7 @@ class Backend:
 
 
 
-    def check_valid(self, username, password): # DRAFT - Verify if the username or password are a-z / A-Z , 0-9 or accepted special characters or has no spaces
+    def _check_valid(self, username, password): # DRAFT - Verify if the username or password are a-z / A-Z , 0-9 or accepted special characters or has no spaces
 
         if len(username) < 5 or len(password) < 8: # Length of username 5 characters or more | Password 8 or more
             return False
