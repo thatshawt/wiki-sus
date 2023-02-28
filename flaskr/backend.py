@@ -6,16 +6,24 @@ from google.cloud import storage
 class Backend:
 
     def __init__(self):
-        self.storage_client = storage.Client()
+        self.storage_client = storage.Client(project="snappy-premise-377919")
         
+    def _get_content_bucket(self):
+        return self.storage_client.bucket("sus-wiki-content-bucket")
+
+    def _get_userpass_bucket(self):
+        return self.storage_client.bucket("sus-user-pass-bucket")
+
     def get_wiki_page(self, name):
         pass
 
     def get_all_page_names(self):
         pass
 
-    def upload(self):
-        pass
+    def upload(self, wikiname, file):
+        content_bucket = self._get_content_bucket()
+        the_blob = content_bucket.blob("pages/" + wikiname)
+        the_blob.upload_from_file(file)
 
     def sign_up(self, username, password): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
 
@@ -23,7 +31,7 @@ class Backend:
             print('INVALID')
             return 'INVALID'
         
-        bucket = self.storage_client.bucket('sus-user-pass-bucket')
+        bucket = self._get_userpass_bucket()
         blob = bucket.blob(username.lower())
 
         if blob.exists():
@@ -36,7 +44,7 @@ class Backend:
 
     def sign_in(self, username, password): # Draft for SIGN IN
         
-        bucket = self.storage_client.bucket('sus-user-pass-bucket')
+        bucket = self._get_userpass_bucket()
         blob = bucket.blob(username.lower())
 
         if not blob.exists():
