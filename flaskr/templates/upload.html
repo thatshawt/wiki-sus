@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <head>
+        <!-- TODO(Checkpoint Requirement 3): Change the title and content of your wiki.-->
+        <title>Project 1</title>
+    </head>
+</head>
+
+<body>
+    {% include "_navbar.html" %}
+    <div>
+        <b>
+            {% block page_name %}
+            There is an imposter among us.
+            {% endblock %}
+        </b>
+    </div>
+
+    {% if link is defined %}
+    <a>Success! See at <a href="{{ link }}">here</a>
+    {% endif %}
+
+    <div>
+        <form action = "/upload" method = "POST" 
+        enctype = "multipart/form-data">
+        <input type = "text" name = "wikiname" placeholder="wikiname" />
+        <input type = "file" name = "file" />
+        <input type = "submit"/>
+     </form>
+    </div>
+</body>
+
+</html>
