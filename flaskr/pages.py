@@ -34,11 +34,21 @@ def make_endpoints(app):
     def about():
         return render_template("about.html")
 
-    @app.route("/pages/")
+    @app.route("/pages")
     def pages():
         #TODO: this is just a placeholder
         return render_template("main.html")
 
-    @app.route("/signup/")
-    def signup():
-        return render_template("signup.html")
+    @app.route("/signup", methods=['POST', 'GET'])
+    def signup(): # FIXED signup
+        if request.method == 'GET':
+            return render_template("signup.html")
+        elif request.method == 'POST':
+            username = str(request.form.get("username"))
+            password = str(request.form.get("password"))
+            answer = backend.sign_up(username, password)
+            if answer == 'INVALID': # This is a draft for now. Will improve tomorrow
+                return 'INVALID'
+            elif answer == 'ALREADY EXISTS':
+                return 'USER ALREADY EXISTS'
+            return "SUCCESFULL"
