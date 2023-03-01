@@ -57,8 +57,12 @@ class Backend:
         print('LOGGED IN')
         return 'LOGGED IN'
 
-    def get_image(self):
-        pass
+    def get_image(self): # DRAFT - Code for getting an image from bucket
+
+        bucket = self.storage_client.bucket('sus-wiki-content-bucket')
+        blob = bucket.blob('test_image.jpg')
+
+        return blob.public_url()
 
 
 
