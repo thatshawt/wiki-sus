@@ -1,7 +1,8 @@
 {# templates/_navigation.html #}
 
 <nav>
-{% for menu_item in ["home", "pages", "about", "signup"] %}
+
+{% for menu_item in ["home", "pages", "about", "upload", "signup"] %}
   <a href="{{ url_for(menu_item) }}">{{ menu_item|capitalize }}</a>
 {% endfor %}
 </nav>
