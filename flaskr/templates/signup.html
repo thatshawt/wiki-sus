@@ -1,20 +1,12 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html"%}
 
-    <head>
-        <title>WikiSus - Signup</title>
-    </head>
-
-    <body>
-        <h1>Create your sussy account!</h1>
-
-        <form method="POST" action="/signup">
-            <input type="text" name="username" placeholder="Enter a username" required/><br/>
-            <input type="password" name="password" placeholder="Enter a password" required/><br/>
+{% block content %}
+<h1>Create your sussy account!</h1>
+<form method="POST" action="/signup">
+    <input type="text" name="username" placeholder="Enter a username" required/><br/>
+     <input type="password" name="password" placeholder="Enter a password" required/><br/>
             
-            <br/>
-            <input type="submit" value="Submit"/>
-        </form>
-    </body>
-
-</html>
+     <br/>
+    <input type="submit" value="Submit"/>
+</form>
+{% endblock content %}

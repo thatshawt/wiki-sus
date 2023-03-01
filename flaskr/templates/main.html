@@ -1,22 +1,5 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html"%}
 
-<head>
-    <head>
-        <!-- TODO(Checkpoint Requirement 3): Change the title and content of your wiki.-->
-        <title>WikiSus</title>
-    </head>
-</head>
-
-<body>
-    {% include "_navbar.html" %}
-    <div>
-        <b>
-            {% block page_name %}
-            There is an imposter among us.
-            {% endblock %}
-        </b>
-    </div>
-</body>
-
-</html>
+{% block content %}
+<h1>HOME PAGE</h1>
+{% endblock content %}

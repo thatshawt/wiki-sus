@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+        <!-- TODO(Checkpoint Requirement 3): Change the title and content of your wiki.-->
+        {% if title %}
+        <title>WikiSus - {{title}}</title>
+        {% else %}
+        <title>WikiSus</title>
+        {% endif %}
+    </head>
+</head>
+
+<body>
+    <div class="header-menu">
+        <ul>
+            {% for element in ["home", "pages", "about", "upload", "signup"] %}
+            {% if element == title %}
+            <li class="active" id="{{element}}"><a  href="{{ url_for(element)}}">{{element}}</a></li>
+            {% else %}
+            <li id="{{element}}" ><a href="{{ url_for(element)}}">{{element}}</a></li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    
+
+    {% block content %}{% endblock content %}
+
+</body>
+
+</html>

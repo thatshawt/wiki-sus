@@ -12,12 +12,12 @@ def make_endpoints(app):
     # go to a specific route on the project's website.
     @app.route("/")
     def home():
-        return render_template("main.html")
+        return render_template("main.html", title='home')
 
     @app.route("/upload", methods=['GET','POST'])
     def upload():
         if request.method == 'GET':
-            return render_template("upload.html")
+            return render_template("upload.html", title='upload')
         elif request.method == 'POST':
             wikiname = request.form['wikiname']
 
@@ -32,7 +32,7 @@ def make_endpoints(app):
 
     @app.route("/about")
     def about():
-        return render_template("about.html")
+        return render_template("about.html", title='about')
 
     @app.route("/pages")
     def pages():
@@ -42,7 +42,7 @@ def make_endpoints(app):
     @app.route("/signup", methods=['POST', 'GET'])
     def signup(): # FIXED signup
         if request.method == 'GET':
-            return render_template("signup.html")
+            return render_template("signup.html", title='signup')
         elif request.method == 'POST':
             username = str(request.form.get("username"))
             password = str(request.form.get("password"))
