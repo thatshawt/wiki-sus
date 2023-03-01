@@ -17,7 +17,15 @@ class Backend:
     def upload(self):
         pass
 
-    def sign_up(self, username, password): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
+    @app.route('/signup', methods=['GET', 'POST'])
+    def sign_up(self): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
+
+        if request.method != 'POST':
+            return "Invalid data, please use the signup form"
+
+        
+        username = request.form.get("username")
+        password = request.form.get("password")
 
         if not self.check_valid(username, password): # Check if username and password are valid characters
             print('INVALID')

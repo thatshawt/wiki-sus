@@ -19,3 +19,6 @@ def make_endpoints(app):
         #TODO: this is just a placeholder
         return render_template("main.html")
 
+    @app.route("/signup/")
+    def signup():
+        return render_template("signup.html")
