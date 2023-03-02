@@ -69,10 +69,12 @@ class Backend:
 
     def get_image(self): # DRAFT - Code for getting an image from bucket
 
-        bucket = self.storage_client.bucket('sus-wiki-content-bucket')
+        bucket = self.storage_client.bucket('sus-wiki-images')
         blob = bucket.blob('test_image.jpg')
-
-        return blob.public_url()
+        image = None
+        with blob.open('rb') as f:
+            image = f.read()
+        return image
 
 
 
