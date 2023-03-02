@@ -36,8 +36,14 @@ def make_endpoints(app):
 
     @app.route("/pages")
     def pages():
-        #TODO: this is just a placeholder
-        return render_template("main.html")
+        pages = []
+        page_names = backend.get_all_page_names()
+        for page_name in page_names:
+            pages.append({
+                "name": page_name,
+                "link": "/pages/" + page_name + "/"
+            })
+        return render_template("pages.html", pages=pages)
 
     @app.route("/signup", methods=['POST', 'GET'])
     def signup(): # FIXED signup
