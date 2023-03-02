@@ -1,4 +1,4 @@
-from flask import render_template, send_file, request
+from flask import render_template, send_file, request, abort
 from flaskr import backend
 from google.cloud import storage
 
@@ -34,7 +34,7 @@ def make_endpoints(app):
     def about():
         return render_template("about.html", title='about')
 
-    @app.route("/pages")
+    @app.route("/pages/")
     def pages():
         pages = []
         page_names = backend.get_all_page_names()
@@ -44,6 +44,19 @@ def make_endpoints(app):
                 "link": "/pages/" + page_name + "/"
             })
         return render_template("pages.html", pages=pages, title='pages')
+
+    @app.route("/pages/<page>/")
+    def pages2(page):
+        content = backend.get_wiki_page(page)
+
+        if content == None:abort(404)
+
+        wikipage = {
+            "content": content,
+            "name": page
+        }
+
+        return render_template("wikipage.html", wikipage=wikipage)
 
     @app.route("/signup", methods=['POST', 'GET'])
     def signup(): # FIXED signup
