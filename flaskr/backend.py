@@ -18,7 +18,14 @@ class Backend:
         pass
 
     def get_all_page_names(self):
-        pass
+        names = []
+        for blob in self.storage_client.list_blobs(
+            self._get_content_bucket(),
+            prefix="pages/"
+            ):
+            name = blob.name[len("pages/"):]
+            names.append(name)
+        return names
 
     def upload(self, wikiname, file):
         content_bucket = self._get_content_bucket()
