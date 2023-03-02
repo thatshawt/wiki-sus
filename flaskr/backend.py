@@ -15,10 +15,24 @@ class Backend:
         return self.storage_client.bucket("sus-user-pass-bucket")
 
     def get_wiki_page(self, name):
-        pass
+        content_bucket = self._get_content_bucket()
+        page_blob = content_bucket.blob("pages/" + name)
+        
+        if not page_blob.exists(): return None
+        
+        page_content = page_blob.download_as_string()
+
+        return page_content
 
     def get_all_page_names(self):
-        pass
+        names = []
+        for blob in self.storage_client.list_blobs(
+            self._get_content_bucket(),
+            prefix="pages/"
+            ):
+            name = blob.name[len("pages/"):]
+            names.append(name)
+        return names
 
     def upload(self, wikiname, file):
         content_bucket = self._get_content_bucket()
