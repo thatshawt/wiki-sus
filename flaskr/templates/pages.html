@@ -1,22 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html"%}
 
-<head>
-    <head>
-        <!-- TODO(Checkpoint Requirement 3): Change the title and content of your wiki.-->
-        <title>Project 1</title>
-    </head>
-</head>
-
-<body>
-    {% include "_navbar.html" %}
-    <div>
-        <ul>
-            {% for page in pages %}
-                <li><a href="{{page["link"]}}">{{page["name"]}}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-</body>
-
-</html>
+{% block content %}
+<ul>
+    {% for page in pages %}
+        <li><a href="{{page["link"]}}">{{page["name"]}}</a></li>
+    {% endfor %}
+</ul>
+{% endblock content %}

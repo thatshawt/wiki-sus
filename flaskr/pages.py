@@ -43,7 +43,7 @@ def make_endpoints(app):
                 "name": page_name,
                 "link": "/pages/" + page_name + "/"
             })
-        return render_template("pages.html", pages=pages)
+        return render_template("pages.html", pages=pages, title='pages')
 
     @app.route("/signup", methods=['POST', 'GET'])
     def signup(): # FIXED signup
