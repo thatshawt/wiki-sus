@@ -20,6 +20,19 @@ def client(app):
 def test_home_page(client):
     resp = client.get("/")
     assert resp.status_code == 200
-    assert b"Hello, World!\n" in resp.data
+    assert b"<h1>HOME PAGE</h1>" in resp.data
+
+def test_upload_get(client):
+    resp = client.get("/upload")
+    assert resp.status_code == 200
+    assert b'''<form action = "/upload" method = "POST" 
+        enctype = "multipart/form-data">
+        <input type = "text" name = "wikiname" placeholder="wikiname" />
+        <input type = "file" name = "file" />
+        <input type = "submit"/>
+     </form>''' in resp.data
+
+def test_upload_post(client):
+        
 
 # TODO(Project 1): Write tests for other routes.
