@@ -1,6 +1,6 @@
 from hashlib import sha256
 from google.cloud import storage
-
+import base64
 
 # TODO(Project 1): Implement Backend according to the requirements.
 class Backend:
@@ -63,23 +63,18 @@ class Backend:
         bucket = self._get_userpass_bucket()
         blob = bucket.blob(username.lower())
 
-        if not blob.exists():
-            print('USER DOES NOT EXIST')
-            return 'USER DOES NOT EXIST'
+        if not blob.exists(): # User does not exist
+            return False
 
         hashed_password = sha256(password.encode()).hexdigest()
         password_matches = False
+
         with blob.open('r') as f:
             user_password = f.read()
             if hashed_password == user_password:
                 password_matches = True
         
-        if not password_matches:
-            print('INCORRECT PASSWORD')
-            return 'INCORRECT PASSWORD'
-        
-        print('LOGGED IN')
-        return 'LOGGED IN'
+        return password_matches # True if password correct -- False if not
 
     def get_image(self): # DRAFT - Code for getting an image from bucket
 
@@ -87,8 +82,8 @@ class Backend:
         blob = bucket.blob('test_image.jpg')
         image = None
         with blob.open('rb') as f:
-            image = f.read()
-        return image
+            image = base64.b64encode(f.read())
+        return image.decode('utf-8')
 
 
 
@@ -139,3 +134,12 @@ class Backend:
 
         return valid_username and valid_password
 
+
+    # Function just for TESTING purposes
+    def test(self):
+        bucket = self.storage_client.bucket("sus-user-pass-bucket")
+        lst = []
+        for blob in bucket.list_blobs():
+            if blob.name != 'admin':
+                lst.append(blob.name)
+        return lst

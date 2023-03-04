@@ -16,13 +16,24 @@
 <body>
     <div class="header-menu">
         <ul>
-            {% for element in ["home", "pages", "about", "upload", "signup"] %}
-            {% if element == title %}
-            <li class="active" id="{{element}}"><a  href="{{ url_for(element)}}">{{element}}</a></li>
+            {% if not current_user.is_authenticated %}
+                {% for element in ["home", "pages", "about", "upload", "login", "signup"] %}
+                    {% if element == title %}
+                    <li class="active" id="{{element}}"><a  href="{{ url_for(element)}}">{{element}}</a></li>
+                    {% else %}
+                    <li id="{{element}}" ><a href="{{ url_for(element)}}">{{element}}</a></li>
+                    {% endif %}
+                {% endfor %}
+
             {% else %}
-            <li id="{{element}}" ><a href="{{ url_for(element)}}">{{element}}</a></li>
+                {% for element in ["home", "pages", "about", "upload", "logout"] %}
+                    {% if element == title %}
+                    <li class="active" id="{{element}}"><a  href="{{ url_for(element)}}">{{element}}</a></li>
+                    {% else %}
+                    <li id="{{element}}" ><a href="{{ url_for(element)}}">{{element}}</a></li>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
-            {% endfor %}
         </ul>
     </div>
     

@@ -5,8 +5,9 @@
 <form method="POST" action="/signup">
     <input type="text" name="username" placeholder="Enter a username" required/><br/>
      <input type="password" name="password" placeholder="Enter a password" required/><br/>
-            
+        <input type="password" name="password" placeholder="Confirm password" required><br/>
      <br/>
     <input type="submit" value="Submit"/>
 </form>
+<img src="data:image/png;base64, {{ image }}" alt="image">
 {% endblock content %}

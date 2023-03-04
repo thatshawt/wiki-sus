@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+<h1>ACTIVE USER SESSIONS</h1>
+<ul>
+    {% for id in users_dictionary %}
+        <li>ID {{ id }}: {{ users_dictionary.get(id).username }}</li> <br>
+    {% endfor %}
+</ul>
+
+<p>{{ available_ids }}</p>
+{% endblock content %}
