@@ -9,20 +9,19 @@ class User_List:
         # Initializes an empty dictionary for storing all user sessions
         self.users_dictionary = {}
 
-        # Stacks for available and unavailabe IDs
-        self.stack_available_nums = self.start_available_stack()
-        self.stack_occupied_nums = deque()
+        # Queue for available IDs
+        self.available_nums_q = self.start_available_q()
 
         # Dictionary of active sessions (USERNAME : ID)
         self.active_sessions = {}
 
 
-    # Creates a stack for a total of up to 50 simultaneous sessions of users with IDs (1 - 50)
-    def start_available_stack(self):
-        empty_stack = deque()
-        for i in range(50, 0, -1):
-            empty_stack.append(str(i))
-        return empty_stack
+    # Creates a queue for a total of up to 50 simultaneous sessions of users with IDs (1 - 50)
+    def start_available_q(self):
+        empty_q = deque()
+        for i in range(1, 51):
+            empty_q.append(str(i))
+        return empty_q
 
     def update_list(self, username): # Receives username after being verified by backend sign_in
 
@@ -30,11 +29,11 @@ class User_List:
             active_session_id = self.active_sessions.get(username)
             return self.users_dictionary.get(active_session_id)
 
-        # An available ID is retrieved from the stack
+        # An available ID is retrieved from the queue
         # And it is added to the users_dictionary { ID : USER_OBJECT}
-        user_id = self.stack_available_nums.pop()
+        user_id = self.available_nums_q.popleft()
         self.users_dictionary[user_id] = User(user_id, username)
-        self.stack_occupied_nums.append(user_id)
+
 
         # Adds username to an active session dictionary
         # This will allow for efficient use of those 50 sessions
@@ -56,9 +55,9 @@ class User_List:
     def change_user_id(self, old_id):
 
         # Pops the user from the users_dictionary
-        # Gets an available ID from the stack
+        # Gets an available ID from the queue
         user_object = self.users_dictionary.pop(old_id)
-        current_id = self.stack_available_nums.pop()
+        current_id = self.available_nums_q.popleft()
 
         # Update user ID
         user_object.new_id(current_id)
@@ -68,10 +67,9 @@ class User_List:
         self.users_dictionary[current_id] = user_object
         self.active_sessions[user_object.username] = current_id
 
-        # Adds the new used ID to the stack of occupied
-        # Adds the old one to the stack of available IDs
-        self.stack_occupied_nums.append(current_id)
-        self.stack_available_nums.append(old_id)
+ 
+        # Adds the old one to the queue of available IDs
+        self.available_nums_q.append(old_id)
 
     
     # Function for removing user from active sessions
@@ -80,7 +78,7 @@ class User_List:
         user_object = self.users_dictionary.pop(user_id)
 
         # Adds the ID to the stack of available numbers
-        self.stack_available_nums.append(user_id)
+        self.available_nums_q.append(user_id)
 
         # Removes the username from the active_sessions dictionary
         self.active_sessions.pop(user_object.username)
@@ -89,7 +87,7 @@ class User_List:
         return self.users_dictionary
 
     def get_available_ids(self):
-        return str(self.stack_available_nums)
+        return str(self.available_nums_q)
 
     def poblate_users(self):
         test = Backend()
@@ -97,3 +95,5 @@ class User_List:
         for element in lst:
             self.update_list(element)
     
+    def get_active_sessions(self):
+        return self.active_sessions

@@ -19,8 +19,10 @@ class Backend:
         page_blob = content_bucket.blob("pages/" + name)
         
         if not page_blob.exists(): return None
-        
-        page_content = page_blob.download_as_string()
+
+        page_content = None
+        with page_blob.open('r') as f:
+            page_content = f.read()
 
         return page_content
 
@@ -34,10 +36,14 @@ class Backend:
             names.append(name)
         return names
 
-    def upload(self, wikiname, file):
+    def upload(self, post_title, post_content):
         content_bucket = self._get_content_bucket()
-        the_blob = content_bucket.blob("pages/" + wikiname)
-        the_blob.upload_from_file(file)
+        the_blob = content_bucket.blob("pages/" + post_title)
+
+        with the_blob.open('w') as f:
+            f.write(post_content)
+        
+        return post_title            
 
 
     def sign_up(self, username, password): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe

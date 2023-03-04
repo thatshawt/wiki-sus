@@ -9,5 +9,11 @@
     {% endfor %}
 </ul>
 
-<p>{{ available_ids }}</p>
+<p>{{ available_ids }}</p> <br>
+
+<ul>
+    {% for id in occupied %}
+        <li>KEY {{ id }}: {{ occupied.get(id) }}</li> <br>
+    {% endfor %}
+</ul>
 {% endblock content %}

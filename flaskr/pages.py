@@ -36,16 +36,11 @@ def make_endpoints(app):
         if request.method == 'GET':
             return render_template("upload.html", title='upload')
         elif request.method == 'POST':
-            wikiname = request.form['wikiname']
-
-            with tempfile.NamedTemporaryFile() as tmp:
-                f = request.files['file']
-                f.save(tmp)
-                tmp.seek(0)
-                backend.upload(wikiname, tmp)
-                
-                return render_template("upload.html",
-                    link="/pages/" + wikiname)
+            post_title = str(request.form['post_title'])
+            post_content = request.form['content']
+            wikiname = backend.upload(post_title, post_content)  
+            return render_template("upload.html",
+                link="/pages/" + wikiname)
 
     @app.route("/about")
     @login_required
@@ -69,12 +64,7 @@ def make_endpoints(app):
 
         if content == None:abort(404)
 
-        wikipage = {
-            "content": content,
-            "name": page
-        }
-
-        return render_template("wikipage.html", wikipage=wikipage)
+        return render_template("wikipage.html", post_title=page, post_content=content)
 
     @app.route("/signup", methods=['POST', 'GET'])
     def signup(): # FIXED signup
@@ -120,12 +110,18 @@ def make_endpoints(app):
     @login_required
     def session():
         if user_list.retrieve_user(current_user.get_id()).username == 'admin':
-            return render_template('session.html', users_dictionary=user_list.get_active_users(), available_ids=user_list.get_available_ids())
+            return render_template('session.html', users_dictionary=user_list.get_active_users(), available_ids=user_list.get_available_ids(), occupied=user_list.get_active_sessions())
         return 'no access'
 
 
     @app.route('/test')
     def test():
-        user_list.change_user_id('1')
         user_list.poblate_users()
+
         return redirect('/session')
+    
+    @app.route('/test2')
+    def test2():
+        user_list.change_user_id('2')
+        #return redirect('/session')
+        return str(user_list.get_active_sessions())
