@@ -123,5 +123,4 @@ def make_endpoints(app):
     @app.route('/test2')
     def test2():
         user_list.change_user_id('2')
-        #return redirect('/session')
-        return str(user_list.get_active_sessions())
+        return redirect('/session')

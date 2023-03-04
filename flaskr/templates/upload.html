@@ -7,12 +7,19 @@
     <a>Success! See at <a href="{{ link }}">here</a>
     {% endif %}
 
-    <div>
-        <form action = "/upload" method = "POST" 
-        enctype = "multipart/form-data">
-        <input type = "text" name = "wikiname" placeholder="wikiname" />
-        <input type = "file" name = "file" />
-        <input type = "submit"/>
+
+        <form action = "/upload" method = "POST"
+        enctype = "multipart/form-data" style="padding:12px;" >
+        <div style="padding:12px;">
+            <label for="post_title" style="font-size: 24px;">Post Title</label> <br>
+            <input type = "text" name = "post_title" placeholder="I am sus"/> <br>  
+        </div>
+        
+        <div style="padding:12px;">
+            <label for="content">Post content</label> <br>
+            <textarea name="content" rows="5" cols="50" placeholder="Enter content here..."></textarea> <br> <br>
+            <input type = "submit"/>
+        </div>
+        
      </form>
-    </div>
 {% endblock content %}
