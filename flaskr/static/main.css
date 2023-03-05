@@ -13,8 +13,26 @@
 .header-menu li {
     float: left;
   }
-  
-.header-menu  li a {
+
+#user {
+    font-size: 12px;
+    display: block;
+    color: #FA8072;
+    text-align: middle;
+    padding: 14px 16px;
+}
+
+#login, #signup, .logged-in {
+    position: relative;
+    float: right;
+    right: 25px;
+}
+
+#logout {
+    background-color: #2e5984;
+}
+
+.header-menu li a {
     display: block;
     color: white;
     text-align: center;
@@ -33,4 +51,8 @@
 #signup {
     object-position: right;
 
+}
+
+.flashes {
+    color: red;
 }
