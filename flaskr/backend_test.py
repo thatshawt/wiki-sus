@@ -1,4 +1,4 @@
-from backend import Backend
+from flaskr.backend import Backend
 import unittest
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -154,7 +154,7 @@ class TestBackend(unittest.TestCase):
     
     
     # This works for both user and content bucket
-    @patch('backend.storage')
+    @patch('flaskr.backend.storage')
     def test_get_buckets(self, mock_storage):
 
         # Mock bucket object
@@ -174,23 +174,27 @@ class TestBackend(unittest.TestCase):
         # Function call to verify it gets a bucket back
         assert backend._get_userpass_bucket() == mock_bucket, "Did not get bucket back"
 
-    @patch('backend.storage')
+    @patch('flaskr.backend.storage')
     def test_get_image(self, mock_storage):
         B64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
         # B64 Image
         with open('/tmp/test.txt', 'w') as f:
             f.write(B64)
         
+        # Mock object for base64 dependency
         mock_base64 = MagicMock()
         mock_base64.b64encode.return_value = B64.encode('utf-8')
        
 
+        # Mock object for blob
         mock_blob = MagicMock()
         mock_blob.open.return_value = open('/tmp/test.txt', 'r')
         
+        # Mock object for bucket
         mock_bucket = MagicMock()
         mock_bucket.blob.return_value = mock_blob
 
+        # Mock object for client
         mock_client = MagicMock()
         mock_client.bucket = mock_bucket
 
@@ -198,26 +202,8 @@ class TestBackend(unittest.TestCase):
 
         backend = Backend()
         
-        backend.get_image(filename='hello.txt', base64=mock_base64)
+        assert backend.get_image(filename='hello.txt', base64=mock_base64) == B64
 
-    @patch('backend.storage.Client.bucket')
-    def prueba(self, mock_storage):
-        
-        backend = Backend()
-        #backend._get_userpass_bucket = MagicMock(return_value={'user' : 'password'})
-
-        mock_blob = MagicMock()
-        mock_blob.name = 'Juan'
-        mock_blob.password = '123' 
-
-        mock_bucket = MagicMock()
-        mock_bucket.list_blobs.return_value = [mock_blob]
-        mock_bucket.name = mock_bucket.list_blobs.keys()
-
-        mock_storage.return_value = mock_bucket
-
-        lst = backend.test()
-        print('AQUI:', lst)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

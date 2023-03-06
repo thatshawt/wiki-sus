@@ -20,6 +20,8 @@ def client(app):
 def test_home_page(client):
     resp = client.get("/")
     assert resp.status_code == 200
-    assert b"Hello, World!\n" in resp.data
+    assert b"<title>WikiSus - home</title>" in resp.data
 
 # TODO(Project 1): Write tests for other routes.
+
+
