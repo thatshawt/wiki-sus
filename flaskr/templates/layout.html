@@ -43,14 +43,12 @@
                     <li id="{{element}}" ><a href="{{ url_for(element)}}">{{element}}</a></li>
                     {% endif %}
                 {% endfor %}
-<<<<<<< HEAD
+
                     <div class="logged-in">
                         <li id="user">Hello there {{ current_user.username }}!</li>
                         <li id="logout" ><a href="{{ url_for('logout')}}">Sign Out</a></li>
                     </div>
-=======
-                    <li id = "username" >{{current_user.username}}</li>
->>>>>>> parent of 5ae7498 (Revert "Made get_image, get_author and upload functional")
+
             {% endif %}
         </ul>
     </div>
