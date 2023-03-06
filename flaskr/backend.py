@@ -81,6 +81,15 @@ class Backend:
             image = f.read()
         return image.decode('utf-8')
 
+    def get_image(self, image_name): # DRAFT - Code for getting an image from bucket
+
+        bucket = self.storage_client.bucket('sus-wiki-images')
+        blob = bucket.blob(image_name)
+        image = None
+        with blob.open('rb') as f:
+            image = f.read()
+        return image.decode('utf-8')
+
     def sign_up(self, username, password, sha256=sha256): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
         
 
@@ -119,24 +128,6 @@ class Backend:
                 f.close()
         
         return password_matches # True if password correct -- False if not
-
-<<<<<<< HEAD
-    def get_image(self, filename, base64=base64): # DRAFT - Code for getting an image from bucket
-
-        bucket = self.storage_client.bucket('sus-wiki-images')
-        blob = bucket.blob(filename)
-        image = None
-
-        with blob.open('rb') as f:
-            image = base64.b64encode(f.read())
-        
-        image = image.decode('utf-8')
-        return image
-=======
-
->>>>>>> parent of 5ae7498 (Revert "Made get_image, get_author and upload functional")
-
-
 
     def _check_valid(self, username, password): # DRAFT - Verify if the username or password are a-z / A-Z , 0-9 or accepted special characters or has no spaces
 
