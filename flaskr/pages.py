@@ -6,7 +6,7 @@ from google.cloud import storage
 from copy import copy
 
 import tempfile
-
+import base64
 
 backend = backend.Backend()
 user_list = User_List()
@@ -32,13 +32,18 @@ def make_endpoints(app):
         return render_template("main.html", title='home', current_user=current_user)
 
     @app.route("/upload", methods=['GET','POST'])
+    @login_required
     def upload():
         if request.method == 'GET':
             return render_template("upload.html", title='upload')
         elif request.method == 'POST':
             post_title = str(request.form['post_title'])
             post_content = request.form['content']
-            wikiname = backend.upload(post_title, post_content)  
+            
+            image = request.files['post_image']
+            image_string = base64.b64encode(image.read())
+
+            wikiname = backend.upload(post_title, post_content, image_string)  
             return render_template("upload.html",
                 link="/pages/" + wikiname)
 
@@ -60,15 +65,16 @@ def make_endpoints(app):
     @app.route("/pages/<page>/")
     def pages2(page):
         content = backend.get_wiki_page(page)
+        author = backend.get_author(page)
 
         if content == None:abort(404)
-
-        return render_template("wikipage.html", post_title=page, post_content=content)
+        
+        return render_template("wikipage.html", post_title=page, post_content=content, post_image=backend.get_image(page), post_author=author)
 
     @app.route("/signup", methods=['POST', 'GET'])
     def signup(): # FIXED signup
         if request.method == 'GET':
-            return render_template("signup.html", title='signup', image=backend.get_image())
+            return render_template("signup.html", title='signup', image=backend.get_image('test_image.jpg'))
         elif request.method == 'POST':
             username = str(request.form.get("username"))
             password = str(request.form.get("password"))

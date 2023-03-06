@@ -1,5 +1,6 @@
 from hashlib import sha256
 from google.cloud import storage
+from flask_login import current_user
 import base64
 
 # TODO(Project 1): Implement Backend according to the requirements.
@@ -26,6 +27,18 @@ class Backend:
 
         return page_content
 
+    def get_author(self, name):
+        content_bucket = self._get_content_bucket()
+        author_blob = content_bucket.blob("author/" + name)
+
+        if not author_blob.exists(): return None
+
+        author_content = None
+        with author_blob.open('r') as f:
+            author_content = f.read()
+        return author_content
+
+
     def get_all_page_names(self):
         names = []
         for blob in self.storage_client.list_blobs(
@@ -36,15 +49,37 @@ class Backend:
             names.append(name)
         return names
 
-    def upload(self, post_title, post_content):
+    #post_image is already in base64
+    def upload(self, post_title, post_content, post_image):
         content_bucket = self._get_content_bucket()
         the_blob = content_bucket.blob("pages/" + post_title)
-
+        
         with the_blob.open('w') as f:
             f.write(post_content)
-        
-        return post_title            
 
+        image_bucket = self.storage_client.bucket('sus-wiki-images')
+        image_blob = image_bucket.blob(post_title)
+
+        with image_blob.open('wb') as f:
+            f.write(post_image)
+                
+        
+        author_blob = content_bucket.blob("author/" + post_title)
+
+        with author_blob.open('w') as f:
+            f.write(current_user.username)
+        
+        
+        return post_title     
+
+    def get_image(self, image_name): # DRAFT - Code for getting an image from bucket
+
+        bucket = self.storage_client.bucket('sus-wiki-images')
+        blob = bucket.blob(image_name)
+        image = None
+        with blob.open('rb') as f:
+            image = f.read()
+        return image.decode('utf-8')
 
     def sign_up(self, username, password, sha256=sha256): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
         
@@ -85,6 +120,7 @@ class Backend:
         
         return password_matches # True if password correct -- False if not
 
+<<<<<<< HEAD
     def get_image(self, filename, base64=base64): # DRAFT - Code for getting an image from bucket
 
         bucket = self.storage_client.bucket('sus-wiki-images')
@@ -96,6 +132,9 @@ class Backend:
         
         image = image.decode('utf-8')
         return image
+=======
+
+>>>>>>> parent of 5ae7498 (Revert "Made get_image, get_author and upload functional")
 
 
 
