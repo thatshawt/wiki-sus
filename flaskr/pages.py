@@ -61,7 +61,7 @@ def make_endpoints(app):
     def pages2(page):
         content = backend.get_wiki_page(page)
 
-        if content == None:abort(404)
+        if content == None: abort(404)
 
         return render_template("wikipage.html", post_title=page, post_content=content)
 
