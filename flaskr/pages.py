@@ -1,4 +1,4 @@
-from flask import render_template, send_file, request, abort, redirect, url_for
+from flask import render_template, send_file, request, abort, redirect, url_for, flash
 from flaskr import backend
 from flaskr.user_list import User_List
 from flask_login import login_required, LoginManager, login_user, logout_user, current_user
@@ -43,7 +43,6 @@ def make_endpoints(app):
                 link="/pages/" + wikiname)
 
     @app.route("/about")
-    @login_required
     def about():
         return render_template("about.html", title='about', current_user=current_user)
 
@@ -75,9 +74,11 @@ def make_endpoints(app):
             password = str(request.form.get("password"))
             answer = backend.sign_up(username, password)
             if answer == 'INVALID': # This is a draft for now. Will improve tomorrow
-                return 'INVALID'
+                flash('Invalid format. Try Again! You must use valid characters/numbers. User must be 5 characters or more. Password 8 characters or more.')
+                return redirect(url_for('signup'))
             elif answer == 'ALREADY EXISTS':
-                return 'USER ALREADY EXISTS'
+                flash('User already exists. Try a different one!')
+                return redirect(url_for('signup'))
             return "SUCCESFULL"
 
     @app.route('/login', methods=['POST', 'GET'])
@@ -89,10 +90,13 @@ def make_endpoints(app):
                 user = user_list.update_list(username)
                 login_user(user)
                 return redirect(url_for('home'))
-
+            else:
+                flash('User or password is not correct. Try again!')
+                return redirect(url_for('login'))
+                
         # If user already authenticated they can't login again
         if not current_user.is_authenticated:
-            return render_template('login.html')
+            return render_template('login.html', title='login')
 
         return redirect(url_for('home'))
 
@@ -117,8 +121,8 @@ def make_endpoints(app):
     @app.route('/test')
     def test():
         user_list.poblate_users()
-
-        return redirect('/session')
+        flash(str(current_user.username))
+        return redirect(url_for('session'))
     
     @app.route('/test2')
     def test2():

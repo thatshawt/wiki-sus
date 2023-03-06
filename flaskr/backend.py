@@ -7,7 +7,7 @@ class Backend:
 
     def __init__(self):
         self.storage_client = storage.Client(project="snappy-premise-377919")
-        
+
     def _get_content_bucket(self):
         return self.storage_client.bucket("sus-wiki-content-bucket")
 
@@ -17,10 +17,10 @@ class Backend:
     def get_wiki_page(self, name):
         content_bucket = self._get_content_bucket()
         page_blob = content_bucket.blob("pages/" + name)
-        
         if not page_blob.exists(): return None
 
         page_content = None
+        
         with page_blob.open('r') as f:
             page_content = f.read()
 
@@ -46,7 +46,7 @@ class Backend:
         return post_title            
 
 
-    def sign_up(self, username, password): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
+    def sign_up(self, username, password, sha256=sha256): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
         
 
         if not self._check_valid(username, password): # Check if username and password are valid characters
@@ -61,10 +61,11 @@ class Backend:
             return 'ALREADY EXISTS'
         
         with blob.open('w') as f:
-            f.write(sha256(password.encode()).hexdigest())
+            prefixed_password = ''.join(['sus', password])
+            f.write(sha256(prefixed_password.encode()).hexdigest())
 
 
-    def sign_in(self, username, password): # Draft for SIGN IN
+    def sign_in(self, username, password, sha256=sha256): # Draft for SIGN IN
         
         bucket = self._get_userpass_bucket()
         blob = bucket.blob(username.lower())
@@ -72,24 +73,29 @@ class Backend:
         if not blob.exists(): # User does not exist
             return False
 
-        hashed_password = sha256(password.encode()).hexdigest()
+        prefixed_password = ''.join(['sus', password])
+        hashed_password = sha256(prefixed_password.encode()).hexdigest()
         password_matches = False
 
         with blob.open('r') as f:
             user_password = f.read()
             if hashed_password == user_password:
                 password_matches = True
+                f.close()
         
         return password_matches # True if password correct -- False if not
 
-    def get_image(self): # DRAFT - Code for getting an image from bucket
+    def get_image(self, filename, base64=base64): # DRAFT - Code for getting an image from bucket
 
         bucket = self.storage_client.bucket('sus-wiki-images')
-        blob = bucket.blob('test_image.jpg')
+        blob = bucket.blob(filename)
         image = None
+
         with blob.open('rb') as f:
             image = base64.b64encode(f.read())
-        return image.decode('utf-8')
+        
+        image = image.decode('utf-8')
+        return image
 
 
 
@@ -143,9 +149,14 @@ class Backend:
 
     # Function just for TESTING purposes
     def test(self):
+        
         bucket = self.storage_client.bucket("sus-user-pass-bucket")
+        
         lst = []
         for blob in bucket.list_blobs():
+            
             if blob.name != 'admin':
+                
                 lst.append(blob.name)
+        
         return lst

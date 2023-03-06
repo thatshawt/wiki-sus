@@ -13,4 +13,4 @@ class User(UserMixin):
             self._is_admin = True
 
     def new_id(self, new_id):
-        self.id = new_id    
+        self.id = new_id
