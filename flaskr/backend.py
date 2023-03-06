@@ -71,8 +71,6 @@ class Backend:
         
         
         return post_title     
-<<<<<<< HEAD
-=======
 
     def get_image(self, image_name): # DRAFT - Code for getting an image from bucket
 
@@ -82,7 +80,6 @@ class Backend:
         with blob.open('rb') as f:
             image = f.read()
         return image.decode('utf-8')
->>>>>>> parent of 5ae7498 (Revert "Made get_image, get_author and upload functional")
 
     def get_image(self, image_name): # DRAFT - Code for getting an image from bucket
 
