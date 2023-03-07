@@ -1,4 +1,4 @@
-from backend import Backend
+from flaskr.backend import Backend
 import unittest
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -154,7 +154,7 @@ class TestBackend(unittest.TestCase):
     
     
     # This works for both user and content bucket
-    @patch('backend.storage')
+    @patch('flaskr.backend.storage')
     def test_get_buckets(self, mock_storage):
 
         # Mock bucket object
@@ -174,7 +174,7 @@ class TestBackend(unittest.TestCase):
         # Function call to verify it gets a bucket back
         assert backend._get_userpass_bucket() == mock_bucket, "Did not get bucket back"
 
-    @patch('backend.storage')
+    @patch('flaskr.backend.storage')
     def test_get_image(self, mock_storage):
         B64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
         # B64 Image
@@ -200,7 +200,7 @@ class TestBackend(unittest.TestCase):
         
         backend.get_image(filename='hello.txt', base64=mock_base64)
 
-    @patch('backend.storage.Client.bucket')
+    @patch('flaskr.backend.storage.Client.bucket')
     def prueba(self, mock_storage):
         
         backend = Backend()
