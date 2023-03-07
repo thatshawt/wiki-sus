@@ -2,6 +2,8 @@ from flaskr.backend import Backend
 import unittest
 from unittest.mock import MagicMock
 from unittest.mock import patch
+from flaskr.user_list import User_List
+from flaskr.user import User
 from os import remove
 
 # TODO(Project 1): Write tests for Backend methods.
@@ -181,16 +183,20 @@ class TestBackend(unittest.TestCase):
         with open('/tmp/test.txt', 'w') as f:
             f.write(B64)
         
+        # Mock object for base64 dependency
         mock_base64 = MagicMock()
         mock_base64.b64encode.return_value = B64.encode('utf-8')
        
 
+        # Mock object for blob
         mock_blob = MagicMock()
         mock_blob.open.return_value = open('/tmp/test.txt', 'r')
         
+        # Mock object for bucket
         mock_bucket = MagicMock()
         mock_bucket.blob.return_value = mock_blob
 
+        # Mock object for client
         mock_client = MagicMock()
         mock_client.bucket = mock_bucket
 
@@ -198,26 +204,128 @@ class TestBackend(unittest.TestCase):
 
         backend = Backend()
         
-        backend.get_image(filename='hello.txt', base64=mock_base64)
+        assert backend.get_image(filename='hello.txt', base64=mock_base64) == B64
 
-    @patch('flaskr.backend.storage.Client.bucket')
-    def prueba(self, mock_storage):
+
+        # UNIT TESTS for user_list #
+
+    def test_user_list_start_queue(self):
+        # Instance of User_List
+        user_list = User_List()
+
+        # Expectend length result
+        expected = 50
+
+        assert len(user_list.available_nums_q) == expected
+
+    def test_update_user_list(self):
+        # Instance of User_List
+        user_list = User_List()
+
+        # Updating user_list with two users
+        user_list.update_list('admin')
+        user_list.update_list('root')
+
+        # Expected results
+        expected1 = {'admin' : '1', 'root' : '2'}
+        expected2 = {'1' : User('1', 'admin'), '2' : User('2', 'root')}
+        assert user_list.active_sessions == expected1
+        assert user_list.users_dictionary == expected2
+
+    def test_retrieve_user(self):
+        # Instance of User_List
+        user_list = User_List()
+
+        # Updating list with a user
+        user_list.update_list('admin')
+
+        # Expected outcome
+        expected = User('1', 'admin')
+
+        assert user_list.retrieve_user(1) == expected
+
+
+    def test_change_user_id(self):
+        # Instance of User_List
+        user_list = User_List()
+
+        # Updating list with a user
+        user_list.update_list('admin')
+
+        # Expected outcome
+        expected = {'admin' : '2'}
+        user_list.change_user_id('1')
+
+        assert user_list.active_sessions == expected
+
+
+    def test_change_user_id_not_found(self):
+
+        # Instance of User_List
+        user_list = User_List()
+
+        # Updating list with a user
+        user_list.update_list('admin')
+
+        # Expected outcome
+        expected = 'error'
+
+        assert user_list.change_user_id('3') == expected
+
+    def test_remove_user_from_session(self):
+        # Instance of User_List
+        user_list = User_List()
+
+        # Updating list with a user
+        user_list.update_list('admin')
+
+        # Expected variables
+        expected1 = 1
+        expected2 = 0
+
+        assert len(user_list.active_sessions) == expected1
+        assert len(user_list.users_dictionary) == expected1
         
-        backend = Backend()
-        #backend._get_userpass_bucket = MagicMock(return_value={'user' : 'password'})
+        user_list.remove_user_from_session('1')
+        assert len(user_list.active_sessions) == expected2
+        assert len(user_list.users_dictionary) == expected2
 
-        mock_blob = MagicMock()
-        mock_blob.name = 'Juan'
-        mock_blob.password = '123' 
+    def test_get_active_users(self):
+        # Instance of User_List
+        user_list = User_List()
 
-        mock_bucket = MagicMock()
-        mock_bucket.list_blobs.return_value = [mock_blob]
-        mock_bucket.name = mock_bucket.list_blobs.keys()
+        # Updating list with a user
+        user_list.update_list('admin')
 
-        mock_storage.return_value = mock_bucket
+        # Expected outcome
+        expected = {'1' : User('1', 'admin')}
 
-        lst = backend.test()
-        print('AQUI:', lst)
+        assert user_list.users_dictionary == expected
+
+
+    def test_get_available_ids(self):
+        # Instance of User_List
+        user_list = User_List()
+
+        # Updating list with a user
+        user_list.update_list('admin')
+
+        expected = 49
+
+        assert len(user_list.available_nums_q) == expected
+
+
+    def test_get_active_sessions(self):
+        # Instance of User_List
+        user_list = User_List()
+
+        # Updating list with a user
+        user_list.update_list('admin')
+        
+        # Expected outcome
+        expected = {'admin' : '1'}
+
+        assert user_list.active_sessions == expected
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

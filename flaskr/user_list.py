@@ -7,13 +7,17 @@ from collections import deque
 class User_List:
     def __init__(self): 
         # Initializes an empty dictionary for storing all user sessions
+        # { ID : USER_OBJECT}
         self.users_dictionary = {}
 
         # Queue for available IDs
         self.available_nums_q = self.start_available_q()
 
-        # Dictionary of active sessions (USERNAME : ID)
+        # Dictionary of active sessions
+        # (USERNAME : ID)
         self.active_sessions = {}
+
+        # TODO Maybe implement a fix for what to do if it reaches 50 active sessions.
 
 
     # Creates a queue for a total of up to 50 simultaneous sessions of users with IDs (1 - 50)
@@ -53,6 +57,10 @@ class User_List:
     # User to be logged out everywhere.
 
     def change_user_id(self, old_id):
+
+        # verifies if this ID exists
+        if old_id not in self.users_dictionary:
+            return 'error'
 
         # Pops the user from the users_dictionary
         # Gets an available ID from the queue
