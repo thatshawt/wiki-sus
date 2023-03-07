@@ -1,4 +1,7 @@
 from flaskr import create_app
+from flask_login import FlaskLoginClient
+from flaskr.user import User
+from unittest.mock import patch
 
 import pytest
 
@@ -9,19 +12,150 @@ def app():
     app = create_app({
         'TESTING': True,
     })
+
+    # we need this so we can login during tests using fake users
+    app.test_client_class = FlaskLoginClient
+
     return app
 
+# for when we want anonymous user :|
 @pytest.fixture
-def client(app):
+def anon_client(app):
     return app.test_client()
 
-# TODO(Checkpoint (groups of 4 only) Requirement 4): Change test to
-# match the changes made in the other Checkpoint Requirements.
-def test_home_page(client):
-    resp = client.get("/")
+def test_home_get(anon_client):
+    resp = anon_client.get("/")
     assert resp.status_code == 200
-    assert b"<title>WikiSus - home</title>" in resp.data
+    assert b"<h1>HOME PAGE</h1>" in resp.data
 
-# TODO(Project 1): Write tests for other routes.
+def test_upload_get__logged_out(anon_client):
+    resp = anon_client.get("/upload", follow_redirects=True)
+    assert b'''Please log in to access this page.''' in resp.data
+
+def test_upload_get__logged_in(anon_client):
+    with anon_client:
+        resp1 = anon_client.post("/login", data=dict(username='testtest', password='testtest'),
+                                follow_redirects=True)
+
+        assert b'''Hello there testtest!''' in resp1.data
+
+        resp = anon_client.get("/upload", follow_redirects=True)
+        # assert resp.status_code == 200
+        assert b'''Post Title''' in resp.data
+
+@patch('flaskr.pages.backend')
+def test_upload_post_logged_in(backendMock, anon_client):
+    backendMock.upload.return_value = "test name"
+
+    with anon_client:
+        resp1 = anon_client.post("/login", data=dict(username='testtest', password='testtest'),
+                                follow_redirects=True)
+
+        assert b'''Hello there testtest!''' in resp1.data
+
+        resp = anon_client.post("/upload",data=dict(post_title='idk', content='idk'),
+                                follow_redirects=True)
+        # assert resp.status_code == 200
+        assert b'''Success! See at''' in resp.data
+
+def test_upload_post_logged_out(anon_client):
+    resp = anon_client.post("/upload", follow_redirects=True)
+    assert b'''Please log in to access this page''' in resp.data
+
+def test_about_get(anon_client):
+    resp = anon_client.get("/about", follow_redirects=True)
+    assert b'''Your Authors''' in resp.data
+
+# this could be better with mocking
+def test_pages_get(anon_client):
+    resp = anon_client.get("/pages/", follow_redirects=True)
+    assert b'''Emergency Meeting''' in resp.data
+
+@patch('flaskr.pages.backend')
+def test_pages2_get__exist(backendMock, anon_client):
+    backendMock.get_wiki_page.return_value = "roblox"
+
+    resp = anon_client.get("/pages/roblox/", follow_redirects=True)
+    assert b'''roblox''' in resp.data
+
+@patch('flaskr.pages.backend')
+def test_pages2_get__nonexist(backendMock, anon_client):
+    backendMock.get_wiki_page.return_value = None
+
+    resp = anon_client.get("/pages/roblox/", follow_redirects=True)
+    assert b'''URL was not found on the server''' in resp.data
+
+def test_signup_get(anon_client):
+    resp = anon_client.get("/signup", follow_redirects=True)
+    assert b'''Create your sussy account''' in resp.data
+
+@patch('flaskr.pages.backend')
+def test_signup_post__success(mockBackendClass, anon_client):
+    mockBackendClass.sign_up.return_value = None
+
+    resp = anon_client.post("/signup", data=dict(username='testtest', password='testtest'),
+                            follow_redirects=True)
+    assert b'''SUCCESFULL''' in resp.data
+
+@patch('flaskr.pages.backend')
+def test_signup_post__invalid(mockBackendClass, anon_client):
+    mockBackendClass.sign_up.return_value = 'INVALID'
+
+    resp = anon_client.post("/signup", data=dict(username='testtest', password='testtest'),
+                            follow_redirects=True)
+    assert b'''Create your sussy account''' in resp.data
 
 
+@patch('flaskr.pages.backend')
+def test_signup_post__already_exist(mockBackendClass, anon_client):
+    mockBackendClass.sign_up.return_value = 'ALREADY EXISTS'
+
+    resp = anon_client.post("/signup", data=dict(username='testtest', password='testtest'),
+                            follow_redirects=True)
+    assert b'''Create your sussy account''' in resp.data
+
+def test_login_get__logged_out(anon_client):
+    resp = anon_client.get("/login", follow_redirects=True)
+
+    assert b'''Username''' in resp.data
+    assert b'''Password''' in resp.data
+
+@patch('flaskr.pages.current_user')
+def test_login_get__logged_in(current_userMock, anon_client):
+    current_userMock.is_authenticated.return_value = True
+
+    resp = anon_client.get("/login", follow_redirects=True)
+
+    assert b'''HOME PAGE''' in resp.data
+
+@patch("flaskr.pages.backend")
+def test_login_post__succes(backendMock, anon_client):
+    backendMock.sign_in.return_value = True
+
+    resp = anon_client.post("/login", follow_redirects=True)
+
+    assert b'''HOME PAGE''' in resp.data
+
+@patch("flaskr.pages.backend")
+def test_login_post__fail(backendMock, anon_client):
+    backendMock.sign_in.return_value = False
+
+    resp = anon_client.post("/login", follow_redirects=True)
+
+    assert b'''User or password is not correct''' in resp.data
+
+def test_logout_get__logged_in(anon_client):
+    with anon_client: # should be logged in as 'cool beanz'
+        resp1 = anon_client.post("/login", data=dict(username='testtest', password='testtest'),
+                                follow_redirects=True)
+
+        assert b'''Hello there testtest!''' in resp1.data
+
+        resp = anon_client.get("/logout", follow_redirects=True)
+        # assert resp.status_code == 200
+        assert b'''Username''' in resp.data
+        assert b'''Password''' in resp.data
+
+def test_logout_get__logged_out(anon_client):
+    resp = anon_client.get("/logout", follow_redirects=True)
+    assert b'''Please log in to access this page''' in resp.data
