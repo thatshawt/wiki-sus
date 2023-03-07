@@ -51,6 +51,7 @@ class Backend:
 
     #post_image is already in base64
     def upload(self, post_title, post_content, post_image):
+
         content_bucket = self._get_content_bucket()
         the_blob = content_bucket.blob("pages/" + post_title)
         
@@ -63,13 +64,11 @@ class Backend:
         with image_blob.open('wb') as f:
             f.write(post_image)
                 
-        
         author_blob = content_bucket.blob("author/" + post_title)
 
         with author_blob.open('w') as f:
             f.write(current_user.username)
-        
-        
+
         return post_title     
 
     def get_image(self, image_name): # DRAFT - Code for getting an image from bucket
