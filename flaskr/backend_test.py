@@ -178,39 +178,31 @@ class TestBackend(unittest.TestCase):
         # Function call to verify it gets a bucket back
         assert backend._get_userpass_bucket() == mock_bucket, "Did not get bucket back"
 
-    @patch('flaskr.backend.storage.Client')
-    def test_get_image_0(self, mock_storage):
+    def test_get_image_0(self):
 
         image_data = "arbitrary_data"
-       
 
-        # Mock object for blob
-        mock_blob = MagicMock()
-
-        #Mock read and open
-        mock_read = MagicMock()
-        mock_read.read.return_value = b"arbitrary_data"
-        mock_blob.open.return_value.__enter__.return_value = mock_read
-
-        # Mock object for bucket
-        mock_bucket = MagicMock()
-        mock_bucket.blob.return_value = mock_blob
-
-        # Mock object for client
-        mock_client = MagicMock()
-        mock_client.bucket = mock_bucket
-
-        #Mock object for decode
-        mock_decode = MagicMock()
-        mock_decode.decode.return_value = "arbitrary_data"
-
-        mock_storage.Client.return_value = mock_client
-
+        # mock.bucket().blob().open().__enter__().read().decode()
+        
         backend = Backend()
 
-        return_value = backend.get_image("some_image", mock_decode)
-        assert return_value == image_data
+        backend.storage_client = MagicMock()
+        mock_bucket = MagicMock()
+        mock_blob = MagicMock()
+        mock_open = MagicMock()
+        mock_enter = MagicMock()
+        mock_read = MagicMock()
 
+        backend.storage_client.bucket.return_value = mock_bucket
+        mock_bucket.blob.return_value = mock_blob
+        mock_blob.open.return_value = mock_open
+        mock_open.__enter__.return_value = mock_enter
+        mock_enter.read.return_value = mock_read
+
+        mock_read.decode.return_value = "arbitrary_data"
+
+        return_value = backend.get_image("some_image")
+        assert return_value == image_data
 
         # UNIT TESTS for user_list #
 

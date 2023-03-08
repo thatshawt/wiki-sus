@@ -78,12 +78,10 @@ class Backend:
     def get_image(self, image_name, base64 = base64): 
 
         bucket = self.storage_client.bucket('sus-wiki-images')
-        
         blob = bucket.blob(image_name)
         image = None
         with blob.open('rb') as f:
             image = f.read()
-            
         
         return image.decode('utf-8')
 
