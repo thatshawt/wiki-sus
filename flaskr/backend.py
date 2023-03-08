@@ -75,7 +75,7 @@ class Backend:
     
     #Grab image from blob (already in b64)
     #return decoded image
-    def get_image(self, image_name, base64 = base64): 
+    def get_image(self, image_name): 
 
         bucket = self.storage_client.bucket('sus-wiki-images')
         
@@ -89,7 +89,7 @@ class Backend:
 
 
     #SIGN_UP BUCKET | username is not case sensitive
-    def sign_up(self, username, password, sha256=sha256): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
+    def sign_up(self, username, password, sha256=sha256): 
         
 
         if not self._check_valid(username, password): # Check if username and password are valid characters

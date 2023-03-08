@@ -183,9 +183,16 @@ class TestBackend(unittest.TestCase):
 
         image_data = "arbitrary_data"
        
+        mock_test = MagicMock()
+        mock_test.read.return_value = b"arbitrary_data"
+
+        mock_thing = MagicMock()
+        mock_thing.__enter__.return_value = mock_test
+
 
         # Mock object for blob
         mock_blob = MagicMock()
+        
 
         #Mock read and open
         mock_read = MagicMock()
@@ -196,23 +203,22 @@ class TestBackend(unittest.TestCase):
         mock_bucket = MagicMock()
         mock_bucket.blob.return_value = mock_blob
 
+
         # Mock object for client
         mock_client = MagicMock()
-        mock_client.bucket = mock_bucket
+        mock_client.bucket.return_value = mock_bucket
 
-        #Mock object for decode
-        mock_decode = MagicMock()
-        mock_decode.decode.return_value = "arbitrary_data"
+
 
         mock_storage.Client.return_value = mock_client
 
         backend = Backend()
 
-        return_value = backend.get_image("some_image", mock_decode)
+        return_value = backend.get_image("some_image")
         assert return_value == image_data
 
 
-        # UNIT TESTS for user_list #
+    # UNIT TESTS for user_list #
 
     def test_user_list_start_queue(self):
         # Instance of User_List
