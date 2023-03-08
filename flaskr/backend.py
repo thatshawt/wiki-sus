@@ -71,24 +71,24 @@ class Backend:
 
         return post_title     
 
-    def get_image(self, image_name): # DRAFT - Code for getting an image from bucket
+
+    
+    #Grab image from blob (already in b64)
+    #return decoded image
+    def get_image(self, image_name, base64 = base64): 
 
         bucket = self.storage_client.bucket('sus-wiki-images')
+        
         blob = bucket.blob(image_name)
         image = None
         with blob.open('rb') as f:
             image = f.read()
+            
+        
         return image.decode('utf-8')
 
-    def get_image(self, image_name): # DRAFT - Code for getting an image from bucket
 
-        bucket = self.storage_client.bucket('sus-wiki-images')
-        blob = bucket.blob(image_name)
-        image = None
-        with blob.open('rb') as f:
-            image = f.read()
-        return image.decode('utf-8')
-
+    #SIGN_UP BUCKET | username is not case sensitive
     def sign_up(self, username, password, sha256=sha256): # DRAFT FOR SIGN_UP BUCKET | username NOT cASe sEnSiTiVe
         
 

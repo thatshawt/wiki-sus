@@ -5,6 +5,8 @@ from unittest.mock import patch
 from flaskr.user_list import User_List
 from flaskr.user import User
 from os import remove
+from io import BytesIO
+
 
 # TODO(Project 1): Write tests for Backend methods.
 class TestBackend(unittest.TestCase):
@@ -176,22 +178,20 @@ class TestBackend(unittest.TestCase):
         # Function call to verify it gets a bucket back
         assert backend._get_userpass_bucket() == mock_bucket, "Did not get bucket back"
 
-    @patch('flaskr.backend.storage')
-    def test_get_image(self, mock_storage):
-        B64 = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
-        # B64 Image
-        with open('/tmp/test.txt', 'w') as f:
-            f.write(B64)
-        
-        # Mock object for base64 dependency
-        mock_base64 = MagicMock()
-        mock_base64.b64encode.return_value = B64.encode('utf-8')
+    @patch('flaskr.backend.storage.Client')
+    def test_get_image_0(self, mock_storage):
+
+        image_data = "arbitrary_data"
        
 
         # Mock object for blob
         mock_blob = MagicMock()
-        mock_blob.open.return_value = open('/tmp/test.txt', 'r')
-        
+
+        #Mock read and open
+        mock_read = MagicMock()
+        mock_read.read.return_value = b"arbitrary_data"
+        mock_blob.open.return_value.__enter__.return_value = mock_read
+
         # Mock object for bucket
         mock_bucket = MagicMock()
         mock_bucket.blob.return_value = mock_blob
@@ -200,11 +200,16 @@ class TestBackend(unittest.TestCase):
         mock_client = MagicMock()
         mock_client.bucket = mock_bucket
 
+        #Mock object for decode
+        mock_decode = MagicMock()
+        mock_decode.decode.return_value = "arbitrary_data"
+
         mock_storage.Client.return_value = mock_client
 
         backend = Backend()
-        
-        assert backend.get_image(filename='hello.txt', base64=mock_base64) == B64
+
+        return_value = backend.get_image("some_image", mock_decode)
+        assert return_value == image_data
 
 
         # UNIT TESTS for user_list #
