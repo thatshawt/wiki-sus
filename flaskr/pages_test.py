@@ -2,6 +2,7 @@ from flaskr import create_app
 from flask_login import FlaskLoginClient
 from flaskr.user import User
 from unittest.mock import patch
+from io import BytesIO
 
 import pytest
 
@@ -26,7 +27,7 @@ def anon_client(app):
 def test_home_get(anon_client):
     resp = anon_client.get("/")
     assert resp.status_code == 200
-    assert b"<h1>HOME PAGE</h1>" in resp.data
+    assert b"Hello fellow sussy bakas!" in resp.data
 
 def test_upload_get__logged_out(anon_client):
     resp = anon_client.get("/upload", follow_redirects=True)
@@ -53,7 +54,8 @@ def test_upload_post_logged_in(backendMock, anon_client):
 
         assert b'''Hello there testtest!''' in resp1.data
 
-        resp = anon_client.post("/upload",data=dict(post_title='idk', content='idk'),
+        resp = anon_client.post("/upload",data=dict(post_title='idk', content='idk',
+                                                    post_image=(BytesIO(b'my file contents'), "work_order.123")),
                                 follow_redirects=True)
         # assert resp.status_code == 200
         assert b'''Success! See at''' in resp.data
@@ -64,7 +66,7 @@ def test_upload_post_logged_out(anon_client):
 
 def test_about_get(anon_client):
     resp = anon_client.get("/about", follow_redirects=True)
-    assert b'''Your Authors''' in resp.data
+    assert b'''About this Wiki''' in resp.data
 
 # this could be better with mocking
 def test_pages_get(anon_client):
@@ -126,7 +128,7 @@ def test_login_get__logged_in(current_userMock, anon_client):
 
     resp = anon_client.get("/login", follow_redirects=True)
 
-    assert b'''HOME PAGE''' in resp.data
+    assert b'''Hello fellow sussy bakas!''' in resp.data
 
 @patch("flaskr.pages.backend")
 def test_login_post__succes(backendMock, anon_client):
@@ -134,7 +136,7 @@ def test_login_post__succes(backendMock, anon_client):
 
     resp = anon_client.post("/login", follow_redirects=True)
 
-    assert b'''HOME PAGE''' in resp.data
+    assert b'''Hello fellow sussy bakas!''' in resp.data
 
 @patch("flaskr.pages.backend")
 def test_login_post__fail(backendMock, anon_client):
