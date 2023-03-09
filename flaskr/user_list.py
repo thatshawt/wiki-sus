@@ -96,12 +96,14 @@ class User_List:
 
     def get_available_ids(self):
         return str(self.available_nums_q)
+    
+    def get_active_sessions(self):
+        return self.active_sessions
 
+
+    # Function for TESTING/DEBUGGING purposes
     def poblate_users(self):
         test = Backend()
         lst = test.test()
         for element in lst:
             self.update_list(element)
-    
-    def get_active_sessions(self):
-        return self.active_sessions

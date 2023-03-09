@@ -115,7 +115,7 @@ def make_endpoints(app):
 
 
 
-    # THESE TWO FUNCTIONS ARE FOR TESTING/DEBUGGING PURPOSES
+    # THESE FUNCTIONS ARE FOR TESTING/DEBUGGING PURPOSES
     @app.route('/session')
     @login_required
     def session():
@@ -125,12 +125,19 @@ def make_endpoints(app):
 
 
     @app.route('/test')
+    @login_required
     def test():
-        user_list.poblate_users()
-        flash(str(current_user.username))
-        return redirect(url_for('session'))
-    
+        if user_list.retrieve_user(current_user.get_id()).username == 'admin':
+            user_list.poblate_users()
+            flash(str(current_user.username))
+            return redirect(url_for('session'))
+        else:
+            return 'ACCESS DENIED'
     @app.route('/test2')
+    @login_required
     def test2():
-        user_list.change_user_id('2')
-        return redirect('/session')
+        if user_list.retrieve_user(current_user.get_id()).username == 'admin':
+            user_list.change_user_id('2')
+            return redirect('/session')
+        else:
+            return 'ACCESS DENIED'
