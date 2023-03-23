@@ -1,0 +1,8 @@
+image: python:3
+lint:
+ stage:
+ script:
+ - pip install yapf
+ - yapf --recursive --style google .
+ only:
+ - pushes
