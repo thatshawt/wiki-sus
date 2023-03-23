@@ -29,9 +29,11 @@ def make_endpoints(app):
     # go to a specific route on the project's website.
     @app.route("/")
     def home():
-        return render_template("main.html", title='home', current_user=current_user)
+        return render_template("main.html",
+                               title='home',
+                               current_user=current_user)
 
-    @app.route("/upload", methods=['GET','POST'])
+    @app.route("/upload", methods=['GET', 'POST'])
     @login_required
     def upload():
         if request.method == 'GET':
@@ -39,17 +41,21 @@ def make_endpoints(app):
         elif request.method == 'POST':
             post_title = str(request.form['post_title'])
             post_content = request.form['content']
-            
+
             image = request.files['post_image']
             image_string = base64.b64encode(image.read())
 
-            wikiname = backend.upload(post_title, post_content, image_string)  
-            return render_template("upload.html",
-                link="/pages/" + wikiname)
+            wikiname = backend.upload(post_title, post_content, image_string)
+            return render_template("upload.html", link="/pages/" + wikiname)
 
     @app.route("/about")
     def about():
-        return render_template("about.html", title='about', current_user=current_user, salomon_image = backend.get_image("salomon_image"), david_image = backend.get_image("david_image"), carson_image = backend.get_image("carson_image"))
+        return render_template("about.html",
+                               title='about',
+                               current_user=current_user,
+                               salomon_image=backend.get_image("salomon_image"),
+                               david_image=backend.get_image("david_image"),
+                               carson_image=backend.get_image("carson_image"))
 
     @app.route("/pages/")
     def pages():
@@ -60,27 +66,37 @@ def make_endpoints(app):
                 "name": page_name,
                 "link": "/pages/" + page_name + "/"
             })
-        return render_template("pages.html", pages=pages, title='pages', current_user=current_user)
+        return render_template("pages.html",
+                               pages=pages,
+                               title='pages',
+                               current_user=current_user)
 
     @app.route("/pages/<page>/")
     def pages2(page):
         content = backend.get_wiki_page(page)
         author = backend.get_author(page)
 
-        if content == None:abort(404)
-        
-        return render_template("wikipage.html", post_title=page, post_content=content, post_image=backend.get_image(page), post_author=author)
+        if content == None:
+            abort(404)
+
+        return render_template("wikipage.html",
+                               post_title=page,
+                               post_content=content,
+                               post_image=backend.get_image(page),
+                               post_author=author)
 
     @app.route("/signup", methods=['POST', 'GET'])
-    def signup(): # FIXED signup
+    def signup():  # FIXED signup
         if request.method == 'GET':
             return render_template("signup.html", title='signup')
         elif request.method == 'POST':
             username = str(request.form.get("username"))
             password = str(request.form.get("password"))
             answer = backend.sign_up(username, password)
-            if answer == 'INVALID': # This is a draft for now. Will improve tomorrow
-                flash('Invalid format. Try Again! You must use valid characters/numbers. User must be 5 characters or more. Password 8 characters or more.')
+            if answer == 'INVALID':  # This is a draft for now. Will improve tomorrow
+                flash(
+                    'Invalid format. Try Again! You must use valid characters/numbers. User must be 5 characters or more. Password 8 characters or more.'
+                )
                 return redirect(url_for('signup'))
             elif answer == 'ALREADY EXISTS':
                 flash('User already exists. Try a different one!')
@@ -99,7 +115,7 @@ def make_endpoints(app):
             else:
                 flash('User or password is not correct. Try again!')
                 return redirect(url_for('login'))
-                
+
         # If user already authenticated they can't login again
         if not current_user.is_authenticated:
             return render_template('login.html', title='login')
@@ -113,16 +129,17 @@ def make_endpoints(app):
         logout_user()
         return redirect(url_for('login'))
 
-
-
     # THESE FUNCTIONS ARE FOR TESTING/DEBUGGING PURPOSES
     @app.route('/session')
     @login_required
     def session():
         if user_list.retrieve_user(current_user.get_id()).username == 'admin':
-            return render_template('session.html', users_dictionary=user_list.get_active_users(), available_ids=user_list.get_available_ids(), occupied=user_list.get_active_sessions())
+            return render_template(
+                'session.html',
+                users_dictionary=user_list.get_active_users(),
+                available_ids=user_list.get_available_ids(),
+                occupied=user_list.get_active_sessions())
         return 'no access'
-
 
     @app.route('/test')
     @login_required
@@ -133,6 +150,7 @@ def make_endpoints(app):
             return redirect(url_for('session'))
         else:
             return 'ACCESS DENIED'
+
     @app.route('/test2')
     @login_required
     def test2():

@@ -4,8 +4,10 @@ from collections import deque
 
 # User_List class for managing website user's active sessions
 
+
 class User_List:
-    def __init__(self): 
+
+    def __init__(self):
         # Initializes an empty dictionary for storing all user sessions
         # { ID : USER_OBJECT}
         self.users_dictionary = {}
@@ -19,7 +21,6 @@ class User_List:
 
         # TODO Maybe implement a fix for what to do if it reaches 50 active sessions.
 
-
     # Creates a queue for a total of up to 50 simultaneous sessions of users with IDs (1 - 50)
     def start_available_q(self):
         empty_q = deque()
@@ -27,7 +28,9 @@ class User_List:
             empty_q.append(str(i))
         return empty_q
 
-    def update_list(self, username): # Receives username after being verified by backend sign_in
+    def update_list(
+            self, username
+    ):  # Receives username after being verified by backend sign_in
 
         if username in self.active_sessions:
             active_session_id = self.active_sessions.get(username)
@@ -37,7 +40,6 @@ class User_List:
         # And it is added to the users_dictionary { ID : USER_OBJECT}
         user_id = self.available_nums_q.popleft()
         self.users_dictionary[user_id] = User(user_id, username)
-
 
         # Adds username to an active session dictionary
         # This will allow for efficient use of those 50 sessions
@@ -49,8 +51,6 @@ class User_List:
 
     def retrieve_user(self, user_id):
         return self.users_dictionary.get(str(user_id))
-
-    
 
     # change_user_id will be used for when user decides to change password.
     # It will allow for changing a session's ID which will cause
@@ -75,11 +75,9 @@ class User_List:
         self.users_dictionary[current_id] = user_object
         self.active_sessions[user_object.username] = current_id
 
- 
         # Adds the old one to the queue of available IDs
         self.available_nums_q.append(old_id)
 
-    
     # Function for removing user from active sessions
     def remove_user_from_session(self, user_id):
         # Pop user from the users_dictionary
@@ -96,10 +94,9 @@ class User_List:
 
     def get_available_ids(self):
         return str(self.available_nums_q)
-    
+
     def get_active_sessions(self):
         return self.active_sessions
-
 
     # Function for TESTING/DEBUGGING purposes
     def poblate_users(self):
