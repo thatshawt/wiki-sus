@@ -10,8 +10,22 @@ lint:
 
 unittest:
  stage: test
+ needs:
+  - pipeline: test
+    job: lint
  script:
   - pip install -r 'requirements.txt'
   - pytest
  only:
   - pushes
+
+<job_name>:
+ image: google/cloud-sdk:alpine
+ stage: deploy
+ environment: Production
+ only:
+ - main
+ script:
+ - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
+ - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+ - gcloud app deploy --quiet --project snappy-premise-377919
