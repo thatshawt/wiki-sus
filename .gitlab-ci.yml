@@ -1,7 +1,7 @@
 image: python:3
 
 lint:
- stage: test
+ stage: build
  script:
  - pip install yapf
  - yapf --recursive --style google .
@@ -10,7 +10,7 @@ lint:
 
 unittest:
  stage: test
- needs:
+ dependencies:
   - pipeline: test
     job: lint
  script:
