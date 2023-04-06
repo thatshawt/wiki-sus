@@ -2,10 +2,13 @@
 
 {% block content %}
 <form method="POST" action="">
-    <div>
-        <label for="username">Username</label>
-        <input name="username" type="text" required>    
+    <div class="field">
+        <label for="username" class="label">Username</label>
+        <div class="control">
+            <input name="username" type="text"  class="input" placeholder="Username" required>    
+        </div>
     </div>
+
     <div>
         <label for="password">Password</label>
         <input name="password" type="password" required>
