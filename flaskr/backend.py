@@ -74,6 +74,55 @@ class Backend:
         # List is returned
         return names
 
+    #Returns a dictionary containing the categories data
+    def get_categories(self):
+        categories = dict()
+        
+        content_bucket = self._get_content_bucket()
+        categories_blob = content_bucket.blob("categories/")
+
+        """
+        Categories are harcoded in a CSV formatted as follows: 
+        <Category name>,<page1>,<page2>,<page3>
+        <Category name>,<page1>
+        """
+        #Opening the blob as a file, convert each line into one key/value pair
+        with categories_blob.open('r') as file:
+            lines = file.readlines()
+            
+            for line in lines:
+                currCategory = line.split(",")
+                
+                #Key is the first value, values is the rest
+                key = currCategory[0]
+                values = set(currCategory[1:])             
+                categories[key] = values   
+
+        return categories
+
+    def save_categories(self, categories)
+
+        #categories is a dictionary containing category data
+        content_bucket = self._get_content_bucket()
+        categories_blob = content_bucket.blob("categories/")
+
+        #Generate categories onto a string, write into file
+        output = ""
+
+        for key, values in categories.items():
+            output += (str(key) + ",")
+            for i, value in enumerate(values):
+                output += (str(value))
+                if i != len(values) - 1:
+                    output += ","
+            output += "\n"
+
+        with categories_blob.open('w') as file:
+            file.write(output)
+
+        return 
+
+
     #post_image is already in base64
     def upload(self, post_title, post_content, post_image):
 
