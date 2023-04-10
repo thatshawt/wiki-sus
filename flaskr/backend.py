@@ -100,7 +100,7 @@ class Backend:
 
         return categories
 
-    def save_categories(self, categories)
+    def save_categories(self, categories):
 
         #categories is a dictionary containing category data
         content_bucket = self._get_content_bucket()
@@ -117,10 +117,29 @@ class Backend:
                     output += ","
             output += "\n"
 
+        #For manually setting the values in the blob: 
+        #output = "Crewmate,Crewmate,Tasks,Emergency Meeting\nImposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\nTask,Tasks\nLocation,Security,Emergency Meeting\nTerminology,Sus,Venting\n"
+
         with categories_blob.open('w') as file:
             file.write(output)
 
         return 
+
+    #Given a set of categories selected by user, generate all pages that are in ALL the selected. 
+    def filter_categories(self, user_categories):
+
+        #None selected, return everthing
+        if not user_categories: 
+            return get_all_page_names()
+
+        categories = get_categories()
+        filtered_pages = set(user_categories[0]) 
+        for user_category in user_categories:
+            category_pages = categories[user_category]
+            filtered_pages = filtered_pages.intersection(category_pages)
+
+        save_categories(categories)
+        return filtered_pages
 
 
     #post_image is already in base64

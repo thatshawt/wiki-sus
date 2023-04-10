@@ -29,6 +29,7 @@ def make_endpoints(app):
     # go to a specific route on the project's website.
     @app.route("/")
     def home():
+        
         return render_template("main.html",
                                title='home',
                                current_user=current_user)
