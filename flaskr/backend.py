@@ -3,7 +3,8 @@ from google.cloud import storage
 from flask_login import current_user
 from flaskr.user import User
 import base64
-
+import json
+from datetime import datetime
 
 # TODO(Project 1): Implement Backend according to the requirements.
 class Backend:
@@ -19,6 +20,9 @@ class Backend:
     def _get_userpass_bucket(self):
         # Function returns user/pass bucket
         return self.storage_client.bucket("sus-user-pass-bucket")
+
+    def _get_unique30_folder_blob(self, post_title):
+        return self._get_content_bucket().blob("unique30/" + post_title)
 
     def get_wiki_page(self, name):
 
@@ -342,3 +346,43 @@ class Backend:
                 lst.append(blob.name)
 
         return lst
+
+    def _visited_postpage(self, post_title, ip):
+        page_visit = PageVisit(post_title, ip, datetime.now())
+        blob = page_visit.save_blob(self)
+
+class PageVisit:
+    def __init__(self, post_title, ip, date):
+        self.ip = ip
+        self.date = date
+        self.post_title = post_title
+
+    # def prune(self):
+
+
+    def _encode_to_json(self):
+        the_data = {
+            'post_title': self.post_title,
+            'ip': self.ip,
+            'date': self.date.isoformat(),
+        }
+        the_json = json.dumps(the_data)
+        return the_json
+
+    @staticmethod
+    def decode_from_json(the_json):
+        def page_visit_decoder(dct):
+            return PageVisit(dct['post_title'], dct['ip'], datetime.fromisoformat(dct['date']))
+
+        return json.loads(the_json, object_hook=page_visit_decoder)
+
+    def save_blob(self, backend):
+        content_bucket = backend._get_content_bucket()
+        the_blob = content_bucket.blob("unique30/" + self.post_title + "/" + self.ip)
+        with the_blob.open('w') as f:
+            the_json = self._encode_to_json()
+            f.write(the_json)
+
+        return the_blob
+
+    
