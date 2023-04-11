@@ -16,6 +16,7 @@ class User(UserMixin):
     def new_id(self, new_id):
         self.id = new_id
 
+    # Message : str and sender_user : User object
     def append_message(self, message, sender_user):
         message_object = Message(sender_user, message)
         self.message_list.append(message_object)

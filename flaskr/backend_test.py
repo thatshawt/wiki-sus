@@ -323,5 +323,39 @@ class TestBackend(unittest.TestCase):
         assert user_list.active_sessions == expected
 
 
+    def test_create_message(self):
+        backend = Backend()
+
+        # Sender user object
+        sender = User(1, "Joe")
+        # Receiver user object
+        receiver = User(2, "Mike")
+        # Message to send
+        message = 'Hey Mike!'
+
+        backend.create_message(message, sender, receiver)
+        
+        # Expected result
+        expected = 'Hey Mike!'
+        assert receiver.get_message_list()[0].get_message() == expected
+
+    def test_get_user_messages(self):
+
+        backend = Backend()
+
+        # Sender user object
+        sender = User(1, "Joe")
+        # Receiver user object
+        receiver = User(2, "Mike")
+
+        # Add message to the message list
+        receiver.append_message("Hey", sender)
+
+        # Expected outcome
+        expected = receiver.message_list
+
+        assert backend.get_user_message_list(receiver) == expected
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
