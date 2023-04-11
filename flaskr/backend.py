@@ -59,8 +59,7 @@ class Backend:
         with author_blob.open('r') as f:
             author_content = f.read()
         return author_content
-# 77178fd6c108a84d109b6300366e1b611d00246f new 
-# 892e32592e4f8251582bef116b666cb0a96ae7fd old
+        
     def get_all_page_names(self):
 
         # Initialize an empty list for the pages names
