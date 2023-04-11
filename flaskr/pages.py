@@ -1,5 +1,6 @@
 from flask import render_template, send_file, request, abort, redirect, url_for, flash
 from flaskr import backend
+from flaskr.backend import UniquePageVisit
 from flaskr.user_list import User_List
 from flask_login import login_required, LoginManager, login_user, logout_user, current_user
 from google.cloud import storage
@@ -116,6 +117,8 @@ def make_endpoints(app):
 
         if content == None:
             abort(404)
+
+        UniquePageVisit.on_visit_page(backend, page, request.environ['REMOTE_ADDR'])
 
         return render_template("wikipage.html",
                                post_title=page,
