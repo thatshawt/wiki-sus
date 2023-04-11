@@ -59,7 +59,7 @@ class Backend:
         with author_blob.open('r') as f:
             author_content = f.read()
         return author_content
-        
+
     def get_all_page_names(self):
 
         # Initialize an empty list for the pages names
@@ -344,6 +344,18 @@ class Backend:
 
         return lst
 
+    def get_rank(self, post_title):
+        visit_blobs = self.storage_client.list_blobs("sus-wiki-content-bucket",
+                                        prefix=f'unique30/{post_title}/')
+        unique_visits_30_days = []
+
+        for blob in visit_blobs:
+            page_visit = UniquePageVisit.from_blob(blob)
+            if page_visit._within_30_days(prune=True, backend=self):
+                unique_visits_30_days.append(page_visit)
+
+        return len(unique_visits_30_days)
+
 class UniquePageVisit:
     def __init__(self, post_title, ip, date):
         self.ip = ip
@@ -386,36 +398,34 @@ class UniquePageVisit:
         return json.loads(the_json, object_hook=_page_visit_decoder)
 
     @staticmethod
-    def get_blob_from_ip(backend, post_title, ip):
-        content_bucket = backend._get_content_bucket()
-        the_blob = content_bucket.blob("unique30/" + post_title + "/" + ip)
-
-        return the_blob
-
-    @staticmethod
-    def get_visit_from_ip(backend, post_title, ip):
-        the_blob = UniquePageVisit.get_blob_from_ip(backend, post_title, ip)
+    def from_blob(the_blob):
         if the_blob.exists():
             the_json = the_blob.download_as_string()
             page_visit = UniquePageVisit.decode_from_json(the_json)
-
+            return page_visit
         return None
 
     @staticmethod
+    def from_ip(backend, post_title, ip):
+        content_bucket = backend._get_content_bucket()
+        the_blob = content_bucket.blob("unique30/" + post_title + "/" + ip)
+        return UniquePageVisit.from_blob(the_blob)
+
+    @staticmethod
     def exists_in_past_30_days(backend, post_title, ip):
-        page_visit = UniquePageVisit.get_visit_from_ip(backend, post_title, ip)
+        page_visit = UniquePageVisit.from_ip(backend, post_title, ip)
         if page_visit != None and page_visit._within_30_days():
             return True
 
-        return False
+        return False        
 
-    def _get_blob(self, backend):
-        the_blob = UniquePageVisit.get_blob_from_ip(backend, self.post_title, self.ip)
-
+    def _to_blob(self, backend):
+        content_bucket = backend._get_content_bucket()
+        the_blob = content_bucket.blob("unique30/" + self.post_title + "/" + self.ip)
         return the_blob
 
     def update_blob(self, backend):
-        the_blob = self._get_blob(backend)
+        the_blob = self._to_blob(backend)
         with the_blob.open('w') as f:
             the_json = self._encode_to_json()
             f.write(the_json)
@@ -423,7 +433,7 @@ class UniquePageVisit:
         return the_blob
 
     def _delete_blob(self, backend):
-        the_blob = self._get_blob(backend)
+        the_blob = self._to_blob(backend)
         the_blob.delete()
 
 
