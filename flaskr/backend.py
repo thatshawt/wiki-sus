@@ -261,6 +261,13 @@ class Backend:
 
         return lst
 
+    def page_names_sorted_by_rank(self, reverse=True):
+        names = self.get_all_page_names()
+
+        names.sort(key=lambda page_name: self.get_rank(page_name), reverse=reverse)
+
+        return names
+
     def get_rank(self, post_title):
         visit_blobs = self.storage_client.list_blobs("sus-wiki-content-bucket",
                                         prefix=f'unique30/{post_title}/')
