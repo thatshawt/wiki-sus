@@ -129,6 +129,17 @@ def make_endpoints(app):
         logout_user()
         return redirect(url_for('login'))
 
+
+    @app.route('/messages', methods=['POST', 'GET'])
+    @login_required
+    def messages():
+        return 0
+
+    @app.route('/send_message', methods=['POST', 'GET'])    
+    @login_required
+    def send_message():
+        return 0
+
     # THESE FUNCTIONS ARE FOR TESTING/DEBUGGING PURPOSES
     @app.route('/session')
     @login_required

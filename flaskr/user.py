@@ -6,6 +6,7 @@ class User(UserMixin):
     def __init__(self, id, username):
         self.id = str(id)
         self.username = username
+        self.message_list = []
         self._is_admin = False
 
         if username == 'admin':
