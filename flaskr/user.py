@@ -1,6 +1,8 @@
 from flask_login import UserMixin
 
-
+"""
+This is a user class.
+"""
 class User(UserMixin):
 
     def __init__(self, id, username):
