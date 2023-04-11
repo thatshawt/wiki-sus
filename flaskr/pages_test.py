@@ -89,12 +89,14 @@ def test_pages_get(backendMock, anon_client):
     assert b'''foo''' in resp.data
     assert b'''bar''' in resp.data
 
-
 @patch('flaskr.pages.backend')
-def test_pages2_get__exist(backendMock, anon_client):
-    backendMock.get_wiki_page.return_value = "roblox"
+@patch('flaskr.pages.UniquePageVisit')
+def test_pages2_get__exist(backendMock, visitMock, anon_client):
+    # backendMock.get_wiki_page.return_value = "ROBLOXROBLOXROBLOX"
+    # visitMock.on_visit_page
 
     resp = anon_client.get("/pages/roblox/", follow_redirects=True)
+    # print(resp.data)
     assert b'''roblox''' in resp.data
 
 
