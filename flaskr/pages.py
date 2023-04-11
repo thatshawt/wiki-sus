@@ -133,6 +133,9 @@ def make_endpoints(app):
     @app.route('/messages', methods=['POST', 'GET'])
     @login_required
     def messages():
+        if request.method == 'GET':
+            message_list = backend.get_user_message_list(user_list.retrieve_user(current_user.get_id()))
+            return render_template('messages.html', message_list=message_list)
         return 0
 
     @app.route('/send_message', methods=['POST', 'GET'])    
@@ -167,6 +170,17 @@ def make_endpoints(app):
     def test2():
         if user_list.retrieve_user(current_user.get_id()).username == 'admin':
             user_list.change_user_id('2')
+            return redirect('/session')
+        else:
+            return 'ACCESS DENIED'
+
+    @app.route('/test3')
+    @login_required
+    def test3():
+        if user_list.retrieve_user(current_user.get_id()).username == 'admin':
+            sender = user_list.retrieve_user(5)
+            receiver = user_list.retrieve_user(1)
+            backend.create_message('Hello World! TEST', sender, receiver)
             return redirect('/session')
         else:
             return 'ACCESS DENIED'
