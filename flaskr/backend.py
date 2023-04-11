@@ -4,7 +4,7 @@ from flask_login import current_user
 from flaskr.user import User
 import base64
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # TODO(Project 1): Implement Backend according to the requirements.
 class Backend:
@@ -264,18 +264,30 @@ class Backend:
 
         return lst
 
-    def _visited_postpage(self, post_title, ip):
-        page_visit = PageVisit(post_title, ip, datetime.now())
-        blob = page_visit.save_blob(self)
-
-class PageVisit:
+class UniquePageVisit:
     def __init__(self, post_title, ip, date):
         self.ip = ip
         self.date = date
         self.post_title = post_title
 
-    # def prune(self):
+    @staticmethod
+    def on_visit_page(backend, post_title, ip):
+        # check if visited past 30 days
+        if not UniquePageVisit.exists_in_past_30_days(backend, post_title, ip):
+            # if not then update the blob
+            new_visit = UniquePageVisit(post_title, ip, datetime.now())
+            new_visit.update_blob(backend)
+        
 
+    """
+    If you choose to prune, you also need to set the backend parameter
+    """
+    def _within_30_days(self, prune=False, backend=None):
+        if (self.date + timedelta(days=30)) > datetime.now():
+            return True
+
+        if prune: self._delete_blob(backend)
+        return False
 
     def _encode_to_json(self):
         the_data = {
@@ -288,18 +300,51 @@ class PageVisit:
 
     @staticmethod
     def decode_from_json(the_json):
-        def page_visit_decoder(dct):
-            return PageVisit(dct['post_title'], dct['ip'], datetime.fromisoformat(dct['date']))
+        def _page_visit_decoder(dct):
+            return UniquePageVisit(dct['post_title'], dct['ip'], datetime.fromisoformat(dct['date']))
 
-        return json.loads(the_json, object_hook=page_visit_decoder)
+        return json.loads(the_json, object_hook=_page_visit_decoder)
 
-    def save_blob(self, backend):
+    @staticmethod
+    def get_blob_from_ip(backend, post_title, ip):
         content_bucket = backend._get_content_bucket()
-        the_blob = content_bucket.blob("unique30/" + self.post_title + "/" + self.ip)
+        the_blob = content_bucket.blob("unique30/" + post_title + "/" + ip)
+
+        return the_blob
+
+    @staticmethod
+    def get_visit_from_ip(backend, post_title, ip):
+        the_blob = UniquePageVisit.get_blob_from_ip(backend, post_title, ip)
+        if the_blob.exists():
+            the_json = the_blob.download_as_string()
+            page_visit = UniquePageVisit.decode_from_json(the_json)
+
+        return None
+
+    @staticmethod
+    def exists_in_past_30_days(backend, post_title, ip):
+        page_visit = UniquePageVisit.get_visit_from_ip(backend, post_title, ip)
+        if page_visit != None and page_visit._within_30_days():
+            return True
+
+        return False
+
+    def _get_blob(self, backend):
+        the_blob = UniquePageVisit.get_blob_from_ip(backend, self.post_title, self.ip)
+
+        return the_blob
+
+    def update_blob(self, backend):
+        the_blob = self._get_blob(backend)
         with the_blob.open('w') as f:
             the_json = self._encode_to_json()
             f.write(the_json)
 
         return the_blob
+
+    def _delete_blob(self, backend):
+        the_blob = self._get_blob(backend)
+        the_blob.delete()
+
 
     
