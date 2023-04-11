@@ -24,8 +24,22 @@
         <div style="padding:12px;">
             <label for="image">Upload image: </label>
             <input type = "file"  name = "post_image" accept = "image/*" /><br> <br>
-            <input type = "submit"/>
         </div>
         
+        <div style = "padding:12px">
+        <h4>Select Page Categories:</h4> 
+        <input type="checkbox" id="category1" name="crewmate" value="Crewmate">
+        <label for="vehicle1"> Crewmate</label><br>
+        <input type="checkbox" id="category2" name="imposter" value="Imposter">
+        <label for="vehicle1"> Imposter</label><br>
+        <input type="checkbox" id="category3" name="task"" value="Task">
+        <label for="vehicle1"> Task</label><br>
+        <input type="checkbox" id="category4" name="location" value="Location">
+        <label for="vehicle1"> Location</label><br>
+        <input type="checkbox" id="category5" name="terminology" value="Terminology">
+        <label for="vehicle1"> Terminology</label><br><br> 
+        <button type="sumbit" value="submit">Submit</button>
+    </div>
+
      </form>
 {% endblock content %}

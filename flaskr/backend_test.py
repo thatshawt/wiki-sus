@@ -355,10 +355,12 @@ class TestBackend(unittest.TestCase):
             "Terminology" : {"Sus", "Venting"}
         }
         
-        backend.save_categories(expected)
+        #backend.save_categories(expected)
         actual = backend.get_categories()
         assert actual == expected 
 
+
+    #TODO: Implement test
     def test_save_categories(self):
         categories = {
             "Crewmate" : {"Crewmate", "Tasks", "Emergency Meeting"},
@@ -373,13 +375,13 @@ class TestBackend(unittest.TestCase):
 
         # Blob mock object
         mock_blob = MagicMock()
-        mock_blob.exists.return_value = True  # True or False
+        mock_blob.exists.return_value = True  
         
         #Bucket mock object
         mock_bucket = MagicMock()
         mock_bucket.blob.return_value = mock_blob
 
-        #Expected output
+        #Expected file to be "saved"
         expected = "Crewmate,Crewmate,Tasks,Emergency Meeting\n\
                     Imposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\n\
                     Task,Tasks\n\
@@ -388,6 +390,7 @@ class TestBackend(unittest.TestCase):
         
         #TODO: Finish test
         pass
+        
 
 
 if __name__ == '__main__':
