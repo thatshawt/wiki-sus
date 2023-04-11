@@ -1,9 +1,26 @@
 {% extends "layout.html"%}
 
 {% block content %}
+<form method="POST" action="">
+    <input type="checkbox" id="category1" name="crewmate" value="Crewmate">
+    <label for="vehicle1"> Crewmate</label><br>
+    <input type="checkbox" id="category2" name="imposter" value="Imposter">
+    <label for="vehicle1"> Imposter</label><br>
+    <input type="checkbox" id="category3" name="task"" value="Task">
+    <label for="vehicle1"> Task</label><br>
+    <input type="checkbox" id="category4" name="location" value="Location">
+    <label for="vehicle1"> Location</label><br>
+    <input type="checkbox" id="category5" name="terminology" value="Terminology">
+    <label for="vehicle1"> Terminology</label><br>
+    <button type="sumbit" value="filter">Filter</button>
+</form>
+
 <ul>
     {% for page in pages %}
         <li><a href="{{page["link"]}}">{{page["name"]}}</a></li>
     {% endfor %}
 </ul>
+
+
+
 {% endblock content %}

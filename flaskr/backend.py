@@ -79,7 +79,7 @@ class Backend:
         categories = dict()
         
         content_bucket = self._get_content_bucket()
-        categories_blob = content_bucket.blob("categories/")
+        categories_blob = content_bucket.blob("categories/categories.csv")
 
         """
         Categories are harcoded in a CSV formatted as follows: 
@@ -91,7 +91,7 @@ class Backend:
             lines = file.readlines()
             
             for line in lines:
-                currCategory = line.split(",")
+                currCategory = [value.strip() for value in line.split(",")]
                 
                 #Key is the first value, values is the rest
                 key = currCategory[0]
@@ -104,41 +104,40 @@ class Backend:
 
         #categories is a dictionary containing category data
         content_bucket = self._get_content_bucket()
-        categories_blob = content_bucket.blob("categories/")
+        categories_blob = content_bucket.blob("categories/categories.csv")
 
-        #Generate categories onto a string, write into file
-        output = ""
 
-        for key, values in categories.items():
-            output += (str(key) + ",")
-            for i, value in enumerate(values):
-                output += (str(value))
-                if i != len(values) - 1:
-                    output += ","
-            output += "\n"
-
-        #For manually setting the values in the blob: 
-        #output = "Crewmate,Crewmate,Tasks,Emergency Meeting\nImposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\nTask,Tasks\nLocation,Security,Emergency Meeting\nTerminology,Sus,Venting\n"
+        #"Crewmate,Crewmate,Tasks,Emergency Meeting\nImposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\nTask,Tasks\nLocation,Security,Emergency Meeting\nTerminology,Sus,Venting\n"
+        """
+        categories = {
+            "Crewmate" : {"Crewmate", "Tasks", "Emergency Meeting"},
+            "Imposter" : {"Emergency Meeting", "Kill", "Sabotage", "Sus", "Venting"},
+            "Tasks"    : {"Tasks"},
+            "Location" : {"Security", "Emergency Meeting"},
+            "Terminology" : {"Sus", "Venting"}
+        }
+        """
 
         with categories_blob.open('w') as file:
-            file.write(output)
+            for key, values in categories.items():
+                values_string = ','.join(str(value) for value in values)
+                file.write(f"{key},{values_string}\n")
 
         return 
 
     #Given a set of categories selected by user, generate all pages that are in ALL the selected. 
     def filter_categories(self, user_categories):
-
         #None selected, return everthing
+        backend = Backend()
         if not user_categories: 
-            return get_all_page_names()
-
-        categories = get_categories()
-        filtered_pages = set(user_categories[0]) 
+            return backend.get_all_page_names()
+        categories = backend.get_categories()
+        filtered_pages = categories[user_categories[0]] 
         for user_category in user_categories:
             category_pages = categories[user_category]
             filtered_pages = filtered_pages.intersection(category_pages)
 
-        save_categories(categories)
+        backend.save_categories(categories)
         return filtered_pages
 
 

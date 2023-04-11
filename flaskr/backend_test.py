@@ -322,6 +322,73 @@ class TestBackend(unittest.TestCase):
 
         assert user_list.active_sessions == expected
 
+    def test_get_categories(self):
+
+        # Backend object instance
+        backend = Backend()
+
+        # Blob mock object
+        mock_blob = MagicMock()
+        mock_blob.exists.return_value = True  # True or False
+        
+        #Bucket mock object
+        mock_bucket = MagicMock()
+        mock_bucket.blob.return_value = mock_blob
+
+        #Mocking file opening
+        fake_file = 'Crewmate,Crewmate,Tasks,Emergency Meeting\n\
+                                            Imposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\n\
+                                            Task,Tasks\n\
+                                            Location,Security,Emergency Meeting\n\
+                                            Terminology,Sus,Venting\n'
+
+        mock_blob.open.return_value = fake_file
+        
+
+
+        #Expected value
+        expected = {
+            "Crewmate" : {"Crewmate", "Tasks", "Emergency Meeting"},
+            "Imposter" : {"Emergency Meeting", "Kill", "Sabotage", "Sus", "Venting"},
+            "Tasks"    : {"Tasks"},
+            "Location" : {"Security", "Emergency Meeting"},
+            "Terminology" : {"Sus", "Venting"}
+        }
+        
+        backend.save_categories(expected)
+        actual = backend.get_categories()
+        assert actual == expected 
+
+    def test_save_categories(self):
+        categories = {
+            "Crewmate" : {"Crewmate", "Tasks", "Emergency Meeting"},
+            "Imposter" : {"Emergency Meeting", "Kill", "Sabotage", "Sus", "Venting"},
+            "Tasks"    : {"Tasks"},
+            "Location" : {"Security", "Emergency Meeting"},
+            "Terminology" : {"Sus", "Venting"}
+        }
+
+        # Backend object instance
+        backend = Backend()
+
+        # Blob mock object
+        mock_blob = MagicMock()
+        mock_blob.exists.return_value = True  # True or False
+        
+        #Bucket mock object
+        mock_bucket = MagicMock()
+        mock_bucket.blob.return_value = mock_blob
+
+        #Expected output
+        expected = "Crewmate,Crewmate,Tasks,Emergency Meeting\n\
+                    Imposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\n\
+                    Task,Tasks\n\
+                    Location,Security,Emergency Meeting\n\
+                    Terminology,Sus,Venting\n"
+        
+        #TODO: Finish test
+        pass
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
