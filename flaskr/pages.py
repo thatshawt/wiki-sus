@@ -47,9 +47,8 @@ def make_endpoints(app):
             image_string = base64.b64encode(image.read())
 
             categories = request.form.getlist('category')
-            print(test)
-            return str(test)
-            #wikiname = backend.upload(post_title, post_content, image_string)
+
+            wikiname = backend.upload(post_title, post_content, image_string, categories)
             return render_template("upload.html", link="/pages/" + wikiname)
 
     @app.route("/about")
