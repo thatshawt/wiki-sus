@@ -390,7 +390,30 @@ class TestBackend(unittest.TestCase):
         
         #TODO: Finish test
         pass
+
+
+    def test_update_categories(self):
+
+        # Backend object
+        backend = Backend()
+
+        # Dictionary
+        categories_dictionary = {
+            "test" : set(['post1', 'post2'])
+        }
         
+        
+        # Mock get_categories to return the previous dictionary
+        backend.get_categories = MagicMock(return_value=categories_dictionary)
+
+        # Mock this so it doesn't write to the bucket
+        backend.save_categories = MagicMock()
+
+        # Call function with AmongUs as title and test category
+        backend.update_categories('AmongUs', ['test'])
+       
+        # Checks if the test category has AmongUs as a post
+        assert categories_dictionary == {"test" : set(['post1', 'post2', 'AmongUs'])}
 
 
 if __name__ == '__main__':
