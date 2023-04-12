@@ -335,14 +335,22 @@ class TestBackend(unittest.TestCase):
         mock_bucket = MagicMock()
         mock_bucket.blob.return_value = mock_blob
 
-        #Mocking file opening
+        # Patching get_content_bucket function to return mock_bucket
+        backend._get_content_bucket = MagicMock(return_value=mock_bucket)
+
+        #Mocking a file
+        
         fake_file = 'Crewmate,Crewmate,Tasks,Emergency Meeting\n\
                                             Imposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\n\
                                             Task,Tasks\n\
                                             Location,Security,Emergency Meeting\n\
                                             Terminology,Sus,Venting\n'
 
-        mock_blob.open.return_value = fake_file
+        with open('/tmp/test.csv', 'w') as file:
+            file.write(fake_file)
+
+        mock_blob.open.return_value = open('/tmp/test.csv', 'r')
+
         
 
 
@@ -350,7 +358,7 @@ class TestBackend(unittest.TestCase):
         expected = {
             "Crewmate" : {"Crewmate", "Tasks", "Emergency Meeting"},
             "Imposter" : {"Emergency Meeting", "Kill", "Sabotage", "Sus", "Venting"},
-            "Tasks"    : {"Tasks"},
+            "Task"    : {"Tasks"},
             "Location" : {"Security", "Emergency Meeting"},
             "Terminology" : {"Sus", "Venting"}
         }
@@ -358,6 +366,7 @@ class TestBackend(unittest.TestCase):
         #backend.save_categories(expected)
         actual = backend.get_categories()
         assert actual == expected 
+        remove('/tmp/test.csv')
 
 
     #TODO: Implement test
@@ -365,7 +374,7 @@ class TestBackend(unittest.TestCase):
         categories = {
             "Crewmate" : {"Crewmate", "Tasks", "Emergency Meeting"},
             "Imposter" : {"Emergency Meeting", "Kill", "Sabotage", "Sus", "Venting"},
-            "Tasks"    : {"Tasks"},
+            "Task"    : {"Tasks"},
             "Location" : {"Security", "Emergency Meeting"},
             "Terminology" : {"Sus", "Venting"}
         }
@@ -381,15 +390,42 @@ class TestBackend(unittest.TestCase):
         mock_bucket = MagicMock()
         mock_bucket.blob.return_value = mock_blob
 
+        # Patching get_content_bucket function to return mock_bucket
+        backend._get_content_bucket = MagicMock(return_value=mock_bucket)
+
         #Expected file to be "saved"
-        expected = "Crewmate,Crewmate,Tasks,Emergency Meeting\n\
-                    Imposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\n\
-                    Task,Tasks\n\
-                    Location,Security,Emergency Meeting\n\
-                    Terminology,Sus,Venting\n"
+        expected = "Crewmate,Emergency Meeting,Tasks,Crewmate\nImposter,Kill,Emergency Meeting,Sabotage,Venting,Sus\nTask,Tasks\nLocation,Emergency Meeting,Security\nTerminology,Venting,Sus\n"
         
-        #TODO: Finish test
-        pass
+
+        
+        #mocking a file
+        open('/tmp/test.csv', 'w')
+
+        mock_blob.open.return_value = open('/tmp/test.csv', 'w')
+
+        backend.save_categories(categories)
+        
+        output = ""
+        with open('/tmp/test.csv', 'r') as file:
+            output = file.read()
+        outputLst = output.splitlines()
+        expectedLst = expected.splitlines()
+
+        #Iterate through the input and output list, checking that the first word of each line matches
+        for i in range(len(outputLst) - 1):
+            outputLine = outputLst[i]
+            expectedLine = expectedLst[i]
+            outputItems = outputLine.split(',')
+            expectedItems = expectedLine.split(',')
+            for j in range(len(outputItems) - 1):
+                if j == 0:
+                    assert outputItems[j] == expectedItems[j]
+                else:
+                    assert outputItems[j] in expectedItems 
+        remove('/tmp/test.csv')
+
+
+
         
 
 
