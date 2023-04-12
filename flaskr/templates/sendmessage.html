@@ -2,7 +2,7 @@
 
 {% block content %}
 
-    {% if sent_message is True %}
+    {% if sent_message %}
     <p>Message successfully sent!</p>
     {% endif %}
     <form action = "/sendmessage" method = "POST" style="padding:12px;" >
@@ -12,7 +12,7 @@
             <label for="recipient" style="font-size: 24px;">To: </label> <br>
             <select  name = "recipient" id="recipeient"> <br>  
                 {% for user in users_list %}
-                    <option value="{user}">{user}</option>
+                    <option value="{user}">{{user}}</option>
                 {% endfor %}
             </select>
         </div>
@@ -29,8 +29,9 @@
         <div style="padding:12px;">
             <label for="content"></label> <br>
             <textarea name="content" rows="5" cols="50" placeholder="Enter message content here..."></textarea> <br> 
-            
+            <input type="submit" value="Send"/>
         </div>
+
 
     </form>
 {% endblock content %}

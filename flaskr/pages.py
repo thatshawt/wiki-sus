@@ -89,8 +89,10 @@ def make_endpoints(app):
     @login_required
     def sendmessage():
         if request.method == 'GET':
-            users_dict = user_list.get_active_users
-            users_lst = list(users_dict.values())
+            users_dict = user_list.get_active_users()
+            users_lst = []
+            for userId, user in users_dict.items():
+                users_lst.append(user)
             return render_template("sendmessage.html", 
                                     title = "Send Message",
                                     users_list = users_lst,
@@ -100,8 +102,10 @@ def make_endpoints(app):
             receiver_user = request.form["recipient"]
             sender_user = backend.get_author
             backend.create_message(message, sender_user, receiver_user)
-            users_dict = user_list.get_active_users
-            users_lst = list(users_dict.values())
+            sers_dict = user_list.get_active_users()
+            users_lst = []
+            for userId, user in users_dict.items():
+                users_lst.append(user)
 
             return render_template("sendmessage.html", 
                                     title = "Send Message",
