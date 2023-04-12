@@ -156,17 +156,17 @@ def make_endpoints(app):
                                     title = "Send Message",
                                     users_list = users_lst,
                                     sent_message = True)
-        
-    @app.route("/pages/sorted_by_rank/", methods='GET')
+                                    
+    @app.route("/pages_sorted_rank", methods=['GET'])
     def pages_sorted_by_rank():
         pages = []
         pages_names = backend.page_names_sorted_by_rank()
-        for page_name in page_names:
+        for page_name in pages_names:
             pages.append({
                 "name": page_name,
                 "link": "/pages/" + page_name + "/"
             })
-        return render_templates("pages.html",
+        return render_template("pages.html",
                                 pages=pages,
                                 title='pages',
                                 current_user=current_user)
