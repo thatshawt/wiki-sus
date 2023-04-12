@@ -203,3 +203,12 @@ def test_logout_get__logged_in(backendMock, anon_client):
 def test_logout_get__logged_out(anon_client):
     resp = anon_client.get("/logout", follow_redirects=True)
     assert b'''Please log in to access this page''' in resp.data
+
+
+@patch("flaskr.pages.backend")
+def test_pages_sorted_by_rank(backendMock, anon_client):
+
+    backendMock.page_names_sorted_by_rank.return_value = ['Popular1', 'Popular2' ]
+    resp = anon_client.get("/pages_sorted_rank", follow_redirects=True)
+    assert b'''Popular1''' in resp.data
+
