@@ -264,10 +264,18 @@ class Backend:
     def page_names_sorted_by_rank(self, reverse=True):
         names = self.get_all_page_names()
 
-        names.sort(key=lambda page_name: self.get_rank(page_name), reverse=reverse)
+        names.sort( 
+                # sort by page rank
+                key=lambda page_name: self.get_rank(page_name),
+                # do it in reverse or not
+                reverse=reverse
+                )
 
         return names
 
+    """
+    given a post's title, return its rank
+    """
     def get_rank(self, post_title):
         visit_blobs = self.storage_client.list_blobs("sus-wiki-content-bucket",
                                         prefix=f'unique30/{post_title}/')
@@ -305,19 +313,31 @@ class UniquePageVisit:
         if prune: self._delete_blob(backend)
         return False
 
+    """
+    Returns a json version of the object that is ready to be saved to a blob.
+    The json is a string.
+    """
     def _encode_to_json(self):
         the_data = {
             'post_title': self.post_title,
             'ip': self.ip,
             'date': self.date.isoformat(),
         }
-        the_json = json.dumps(the_data)
-        return the_json
+        return json.dumps(the_data)
 
+
+    """
+    Get a UniquePageVisit from a json string.
+    """
     @staticmethod
     def decode_from_json(the_json):
+        # This tells the json module how to decode incoming data
         def _page_visit_decoder(dct):
-            return UniquePageVisit(dct['post_title'], dct['ip'], datetime.fromisoformat(dct['date']))
+            return UniquePageVisit(
+                post_title=dct['post_title'],
+                ip=dct['ip'],
+                date=datetime.fromisoformat(dct['date'])
+                )
 
         return json.loads(the_json, object_hook=_page_visit_decoder)
 
@@ -329,12 +349,18 @@ class UniquePageVisit:
             return page_visit
         return None
 
+    """
+    searches the database and returns either a corresponding UniquePageVisit or None 
+    """
     @staticmethod
     def from_ip(backend, post_title, ip):
         content_bucket = backend._get_content_bucket()
         the_blob = content_bucket.blob("unique30/" + post_title + "/" + ip)
         return UniquePageVisit.from_blob(the_blob)
 
+    """
+    tries to grab from database. if it exists it returns true, else return false
+    """
     @staticmethod
     def exists_in_past_30_days(backend, post_title, ip):
         page_visit = UniquePageVisit.from_ip(backend, post_title, ip)
