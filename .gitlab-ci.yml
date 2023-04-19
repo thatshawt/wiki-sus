@@ -6,15 +6,23 @@ lint:
  - pip install yapf
  - yapf --recursive --style google .
  only:
- - pushes
+ - merge_requests
 
 unittest:
  stage: test
- needs:
-  - pipeline: test
-    job: lint
  script:
   - pip install -r 'requirements.txt'
-  - pytest
+  - pytest -v
  only:
-  - pushes
+  - merge_requests
+
+deployment:
+ image: google/cloud-sdk:alpine
+ stage: deploy
+ environment: Production
+ only:
+ - main
+ script:
+ - echo $SERVICE_ACCOUNT > /tmp/$CI_PIPELINE_ID.json
+ - gcloud auth activate-service-account --key-file /tmp/$CI_PIPELINE_ID.json
+ - gcloud app deploy --quiet --project snappy-premise-377919

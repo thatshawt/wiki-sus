@@ -38,7 +38,9 @@ def test_upload_get__logged_out(anon_client):
     assert b'''Please log in to access this page.''' in resp.data
 
 
-def test_upload_get__logged_in(anon_client):
+@patch('flaskr.pages.backend')
+def test_upload_get__logged_in(backendMock, anon_client):
+    backendMock.sign_in.return_value = True
     with anon_client:
         resp1 = anon_client.post("/login",
                                  data=dict(username='testtest',
@@ -79,16 +81,20 @@ def test_upload_post_logged_out(anon_client):
     resp = anon_client.post("/upload", follow_redirects=True)
     assert b'''Please log in to access this page''' in resp.data
 
-
-def test_about_get(anon_client):
+@patch('flaskr.pages.backend')
+def test_about_get(backendMock, anon_client):
+    backendMock.get_image.return_value = None
     resp = anon_client.get("/about", follow_redirects=True)
     assert b'''About this Wiki''' in resp.data
 
 
 # this could be better with mocking
-def test_pages_get(anon_client):
+@patch('flaskr.pages.backend')
+def test_pages_get(backendMock, anon_client):
+    backendMock.get_all_page_names.return_value = ["foo", "bar"]
     resp = anon_client.get("/pages/", follow_redirects=True)
-    assert b'''Emergency Meeting''' in resp.data
+    assert b'''foo''' in resp.data
+    assert b'''bar''' in resp.data
 
 
 @patch('flaskr.pages.backend')
@@ -175,8 +181,9 @@ def test_login_post__fail(backendMock, anon_client):
 
     assert b'''User or password is not correct''' in resp.data
 
-
-def test_logout_get__logged_in(anon_client):
+@patch("flaskr.pages.backend")
+def test_logout_get__logged_in(backendMock, anon_client):
+    backendMock.sign_in.return_value = True
     with anon_client:  # should be logged in as 'cool beanz'
         resp1 = anon_client.post("/login",
                                  data=dict(username='testtest',
