@@ -242,7 +242,7 @@ class Backend:
 
     def create_message(self, message : str, sender_user : User, receiver_user : User):
         receiver_user.append_message(message, sender_user.username)
-
+        
     def get_user_message_list(self, user: User) -> list :
         return user.get_message_list()
 

@@ -84,7 +84,38 @@ def make_endpoints(app):
                                post_content=content,
                                post_image=backend.get_image(page),
                                post_author=author)
+    
+    @app.route("/sendmessage", methods=['POST', 'GET'])
+    @login_required
+    def sendmessage():
+        if request.method == 'GET':
+            users_dict = user_list.get_active_users()
+            users_lst = list(users_dict.values())
+            users_lst.remove(users_dict[current_user.get_id()])
+            return render_template("sendmessage.html", 
+                                    title = "Send Message",
+                                    users_list = users_lst,
+                                    sent_message = False)
+        if request.method == 'POST':
 
+            #Active users information for sending another message
+            users_dict = user_list.get_active_users()
+            users_lst = list(users_dict.values())
+            users_lst.remove(users_dict[current_user.get_id()])
+
+            #Message information
+            message = str(request.form["content"])
+            receiver_user = users_dict[request.form["recipient"]]
+            sender_user = users_dict[current_user.get_id()]
+            backend.create_message(message, sender_user, receiver_user)
+
+
+
+            return render_template("sendmessage.html", 
+                                    title = "Send Message",
+                                    users_list = users_lst,
+                                    sent_message = True)
+        
     @app.route("/signup", methods=['POST', 'GET'])
     def signup():  # FIXED signup
         if request.method == 'GET':
@@ -136,11 +167,6 @@ def make_endpoints(app):
         if request.method == 'GET':
             message_list = backend.get_user_message_list(user_list.retrieve_user(current_user.get_id()))
             return render_template('messages.html', message_list=message_list, title="messages")
-        return 0
-
-    @app.route('/send_message', methods=['POST', 'GET'])    
-    @login_required
-    def send_message():
         return 0
 
     # THESE FUNCTIONS ARE FOR TESTING/DEBUGGING PURPOSES

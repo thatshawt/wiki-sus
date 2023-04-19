@@ -1,9 +1,15 @@
 {% extends "layout.html"%}
 
 {% block content %}
-<ul>
-    {% for msg in message_list %}
-        <li><a>{{msg.author}}: {{msg.message}}</a></li>
-    {% endfor %}
-</ul>
+<br>
+<a href="{{url_for('sendmessage')}}">Click here if you wish to send someone a message!</a>
+{% if message_lst %}
+    <ul>
+        {% for msg in message_list %}
+            <li><a>{{msg.author}}: {{msg.message}}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h2>You currently have no messages.</h2>
+{% endif %}
 {% endblock content %}

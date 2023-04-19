@@ -1,0 +1,43 @@
+{% extends "layout.html"%}
+
+{% block content %}
+
+    {% if sent_message %}
+    <p>Message successfully sent!</p>
+    {% endif %}
+    <form action = "/sendmessage" method = "POST" style="padding:12px;" >
+        
+        <!--Recipient-->
+        {% if users_list %}
+        <div style="padding:12px;">
+            <label for="recipient" style="font-size: 24px;">To: </label> <br>
+            <select  name = "recipient" id="recipeient" required> <br>  
+                {% for user in users_list %}
+                    <option value="{{user.id}}">{{user.username}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+
+        <!-- 
+        < !--Message Subject-- >
+        <div style="padding:12px;">
+            <label for="subject" style="font-size: 24px;">Subject </label> <br>
+            <input type = "text" name = "subject" placeholder="Subject"/> <br>  
+        </div>
+        -->
+        
+        <!--Message Content-->
+        <div style="padding:12px;">
+            <label for="content"></label> <br>
+            <textarea name="content" rows="5" cols="50" placeholder="Enter message content here..." required></textarea> <br> 
+            <input type="submit" value="Send"/>
+        </div>
+
+
+    </form>
+
+    {% else %}
+    <h2 style="color: red;">Sorry there are currently no users online</h2>
+    {% endif %}
+{% endblock content %}
