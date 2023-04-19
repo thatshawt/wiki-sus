@@ -176,17 +176,19 @@ class Backend:
 
         return post_title
 
-    def update_categories(self, post_title, categories):
+    def update_categories(self, post_title, new_post_categories):
+        # new_post_categories includes the categories that were selected on the website and passed to the backend.
 
-        # Get category dictionary
-        categories = self.get_categories()
+        # Get the existing dictionary of categories with their corresponding posts.
+        categories_dictionary = self.get_categories()
 
-        # For every category the post has it will be added to the dictionary
-        for category in categories:
-            categories[category].add(post_title)
+        # Iterate through the list of categories the user specified.
+        # The post will be added to the existing category dictionary
+        for category in new_post_categories:
+            categories_dictionary[category].add(post_title)
         
         # Method for updating CSV file
-        self.save_categories(categories)
+        self.save_categories(categories_dictionary)
 
     #Grab image from blob (already in b64)
     #return decoded image
