@@ -10,9 +10,9 @@
         <!--Recipient-->
         <div style="padding:12px;">
             <label for="recipient" style="font-size: 24px;">To: </label> <br>
-            <select  name = "recipient" id="recipeient"> <br>  
+            <select  name = "recipient" id="recipeient" required> <br>  
                 {% for user in users_list %}
-                    <option value="{user}">{{user}}</option>
+                    <option value="{user}">{{user.username}}</option>
                 {% endfor %}
             </select>
         </div>
@@ -28,7 +28,7 @@
         <!--Message Content-->
         <div style="padding:12px;">
             <label for="content"></label> <br>
-            <textarea name="content" rows="5" cols="50" placeholder="Enter message content here..."></textarea> <br> 
+            <textarea name="content" rows="5" cols="50" placeholder="Enter message content here..." required></textarea> <br> 
             <input type="submit" value="Send"/>
         </div>
 

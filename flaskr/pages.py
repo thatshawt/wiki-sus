@@ -90,22 +90,26 @@ def make_endpoints(app):
     def sendmessage():
         if request.method == 'GET':
             users_dict = user_list.get_active_users()
-            users_lst = []
-            for userId, user in users_dict.items():
-                users_lst.append(user)
+            users_lst = list(users_dict.values())
+            users_lst.remove(users_dict[current_user.get_id()])
             return render_template("sendmessage.html", 
                                     title = "Send Message",
                                     users_list = users_lst,
                                     sent_message = False)
         if request.method == 'POST':
+
+            #Active users information for sending another message
+            users_dict = user_list.get_active_users()
+            users_lst = list(users_dict.values())
+            users_lst.remove(users_dict[current_user.get_id()])
+
+            #Message information
             message = str(request.form["content"])
             receiver_user = request.form["recipient"]
-            sender_user = backend.get_author
+            sender_user = users_dict[current_user.get_id()]
             backend.create_message(message, sender_user, receiver_user)
-            sers_dict = user_list.get_active_users()
-            users_lst = []
-            for userId, user in users_dict.items():
-                users_lst.append(user)
+
+
 
             return render_template("sendmessage.html", 
                                     title = "Send Message",
