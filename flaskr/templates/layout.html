@@ -36,7 +36,7 @@
                 {% endfor %}
             
             {% else %}
-                {% for element in ["home", "pages", "upload", "about"] %}
+                {% for element in ["home", "pages", "upload", "about", "messages"] %}
                     {% if element == title %}
                     <li class="active" id="{{element}}"><a  href="{{ url_for(element)}}">{{element}}</a></li>
                     {% else %}

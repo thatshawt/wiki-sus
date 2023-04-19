@@ -135,7 +135,7 @@ def make_endpoints(app):
     def messages():
         if request.method == 'GET':
             message_list = backend.get_user_message_list(user_list.retrieve_user(current_user.get_id()))
-            return render_template('messages.html', message_list=message_list)
+            return render_template('messages.html', message_list=message_list, title="messages")
         return 0
 
     @app.route('/send_message', methods=['POST', 'GET'])    
