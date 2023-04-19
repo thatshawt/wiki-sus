@@ -210,5 +210,5 @@ def test_pages_sorted_by_rank(backendMock, anon_client):
 
     backendMock.page_names_sorted_by_rank.return_value = ['Popular1', 'Popular2' ]
     resp = anon_client.get("/pages_sorted_rank", follow_redirects=True)
-    assert b'''Popular1''' in resp.data
+    assert b'''<li><a href="/pages/Popular1/">Popular1</a></li>\n    \n        <li><a href="/pages/Popular2/">Popular2</a></li>''' in resp.data
 
