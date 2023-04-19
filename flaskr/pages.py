@@ -169,6 +169,16 @@ def make_endpoints(app):
             return render_template('messages.html', message_list=message_list, title="messages")
         return 0
 
+
+    @app.route('/messages/<user>', methods=['GET'])
+    @login_required
+    def message_by_user(user):
+        message_list = backend.get_user_message_list(user_list.retrieve_user(current_user.get_id()))
+        return render_template('messages_author.html', author=user, messages=message_list[user])
+
+
+
+
     # THESE FUNCTIONS ARE FOR TESTING/DEBUGGING PURPOSES
     @app.route('/session')
     @login_required

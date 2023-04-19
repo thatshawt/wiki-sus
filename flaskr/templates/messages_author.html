@@ -1,0 +1,12 @@
+{% extends "layout.html"%}
+
+{% block content %}
+<br>
+<h2>Messages from {{author}}</h2>
+    <ul>
+        {% for msg in messages %}
+            <li><a><b>{{msg.author}}</b>: {{msg.message}}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock content %}
