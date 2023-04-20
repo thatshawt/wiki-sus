@@ -2,11 +2,14 @@
 
 {% block content %}
 <br>
-<h2>Messages from {{author}}</h2>
+<div style="padding-left:2em; padding-top:1em;">
+<h2 style="padding-left:2.2em;">Messages from {{author}}</h2>
     <ul>
         {% for msg in messages %}
-            <li><a><b>{{msg.author}}</b>: {{msg.message}}</a></li>
+            <li style="padding:0.7em">{{msg.date}} | {{ msg.time }} <a><b>{{msg.author}}</b>: {{msg.message}}</a></li>
         {% endfor %}
     </ul>
+</div>
+
 
 {% endblock content %}
