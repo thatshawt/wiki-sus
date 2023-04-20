@@ -77,7 +77,7 @@ def make_endpoints(app):
                                 current_user=current_user)
         elif request.method == 'POST':
             
-            sort_by_rank = request.form.get("sortRank")
+            sort_by_rank = request.form.get("sort_by_rank")
             crewmate = request.form.get("crewmate")
             imposter = request.form.get("imposter")
             task = request.form.get("task")
