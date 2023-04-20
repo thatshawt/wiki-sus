@@ -142,7 +142,10 @@ class Backend:
 
 
     #post_image is already in base64
-    def upload(self, post_title, post_content, post_image):
+    def upload(self, post_title, post_content, post_image, categories):
+
+        if categories:
+            self.update_categories(post_title, categories)
 
         # Object from content bucket
         content_bucket = self._get_content_bucket()
@@ -172,6 +175,20 @@ class Backend:
             f.write(current_user.username)
 
         return post_title
+
+    def update_categories(self, post_title, new_post_categories):
+        # new_post_categories includes the categories that were selected on the website and passed to the backend.
+
+        # Get the existing dictionary of categories with their corresponding posts.
+        categories_dictionary = self.get_categories()
+
+        # Iterate through the list of categories the user specified.
+        # The post will be added to the existing category dictionary
+        for category in new_post_categories:
+            categories_dictionary[category].add(post_title)
+        
+        # Method for updating CSV file
+        self.save_categories(categories_dictionary)
 
     #Grab image from blob (already in b64)
     #return decoded image
