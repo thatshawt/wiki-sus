@@ -77,28 +77,35 @@ def make_endpoints(app):
                                 current_user=current_user)
         elif request.method == 'POST':
             
+            sort_by_rank = request.form.get("sortRank")
             crewmate = request.form.get("crewmate")
             imposter = request.form.get("imposter")
             task = request.form.get("task")
             location = request.form.get("location")
             terminology = request.form.get("terminology")
 
-            categories = []
-            if crewmate:
-                categories.append("Crewmate")
-            if imposter:
-                categories.append("Imposter")
-            if task:
-                categories.append("Tasks")
-            if location:
-                categories.append("Location")
-            if terminology:
-                categories.append("Terminology")
+            page_names = None
+
+            if sort_by_rank: # sort by rank
+                page_names = backend.page_names_sorted_by_rank()
+            else: # or filter by category
+                categories = []
+                if crewmate:
+                    categories.append("Crewmate")
+                if imposter:
+                    categories.append("Imposter")
+                if task:
+                    categories.append("Tasks")
+                if location:
+                    categories.append("Location")
+                if terminology:
+                    categories.append("Terminology")
 
 
-            page_names = backend.filter_categories(categories)
-            if not page_names:
-                page_names = backend.get_all_page_names()
+                page_names = backend.filter_categories(categories)
+                if not page_names:
+                    page_names = backend.get_all_page_names()
+
             pages = []
             
             for page_name in page_names:
@@ -156,22 +163,6 @@ def make_endpoints(app):
                                     title = "Send Message",
                                     users_list = users_lst,
                                     sent_message = True)
-                                    
-    @app.route("/pages_sorted_rank", methods=['GET'])
-    def pages_sorted_by_rank():
-        pages = []
-        pages_names = backend.page_names_sorted_by_rank()
-        for page_name in pages_names:
-            pages.append({
-                "name": page_name,
-                "link": "/pages/" + page_name + "/"
-            })
-        return render_template("pages.html",
-                                pages=pages,
-                                title='pages',
-                                current_user=current_user)
-
-
 
     @app.route("/signup", methods=['POST', 'GET'])
     def signup():  # FIXED signup
