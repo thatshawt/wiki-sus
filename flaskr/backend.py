@@ -3,7 +3,8 @@ from google.cloud import storage
 from flask_login import current_user
 from flaskr.user import User
 import base64
-
+import json
+from datetime import datetime, timedelta
 
 # TODO(Project 1): Implement Backend according to the requirements.
 class Backend:
@@ -19,7 +20,7 @@ class Backend:
     def _get_userpass_bucket(self):
         # Function returns user/pass bucket
         return self.storage_client.bucket("sus-user-pass-bucket")
-
+        
     def get_wiki_page(self, name):
 
         # Get content bucket object
@@ -342,3 +343,137 @@ class Backend:
                 lst.append(blob.name)
 
         return lst
+
+    def page_names_sorted_by_rank(self, reverse=True):
+        names = self.get_all_page_names()
+
+        names.sort( 
+                # sort by page rank
+                key=lambda page_name: self.get_rank(page_name),
+                # do it in reverse or not
+                reverse=reverse
+                )
+
+        return names
+
+    """
+    given a post's title, return its rank
+    """
+    def get_rank(self, post_title):
+        visit_blobs = self.storage_client.list_blobs("sus-wiki-content-bucket",
+                                        prefix=f'unique30/{post_title}/')
+        unique_visits_30_days = []
+
+        for blob in visit_blobs:
+            page_visit = UniquePageVisit.from_blob(blob)
+            if page_visit._within_30_days(prune=True, backend=self):
+                unique_visits_30_days.append(page_visit)
+
+        return len(unique_visits_30_days)
+
+class UniquePageVisit:
+    def __init__(self, post_title, ip, date):
+        self.ip = ip
+        self.date = date
+        self.post_title = post_title
+
+    @staticmethod
+    def on_visit_page(backend, post_title, ip):
+        # check if visited past 30 days
+        if not UniquePageVisit.exists_in_past_30_days(backend, post_title, ip):
+            # if not then update the blob
+            new_visit = UniquePageVisit(post_title, ip, datetime.now())
+            new_visit.update_blob(backend)
+        
+
+    """
+    If you choose to prune, you also need to set the backend parameter
+    """
+    def _within_30_days(self, prune=False, backend=None):
+        if (self.date + timedelta(days=30)) > datetime.now():
+            return True
+
+        if prune: self._delete_blob(backend)
+        return False
+
+    """
+    Returns a json version of the object that is ready to be saved to a blob.
+    The json is a string.
+    """
+    def _encode_to_json(self):
+        the_data = {
+            'post_title': self.post_title,
+            'ip': self.ip,
+            'date': self.date.isoformat(),
+        }
+        return json.dumps(the_data)
+
+
+    """
+    Get a UniquePageVisit from a json string.
+    """
+    @staticmethod
+    def decode_from_json(the_json):
+        # This tells the json module how to decode incoming data
+        def _page_visit_decoder(dct):
+            return UniquePageVisit(
+                post_title=dct['post_title'],
+                ip=dct['ip'],
+                date=datetime.fromisoformat(dct['date'])
+                )
+
+        return json.loads(the_json, object_hook=_page_visit_decoder)
+
+    @staticmethod
+    def from_blob(the_blob):
+        if the_blob.exists():
+            the_json = the_blob.download_as_string()
+            page_visit = UniquePageVisit.decode_from_json(the_json)
+            return page_visit
+        return None
+
+    """
+    searches the database and returns either a corresponding UniquePageVisit or None 
+    """
+    @staticmethod
+    def from_ip(backend, post_title, ip):
+        content_bucket = backend._get_content_bucket()
+        the_blob = content_bucket.blob("unique30/" + post_title + "/" + ip)
+        return UniquePageVisit.from_blob(the_blob)
+
+    """
+    tries to grab from database. if it exists it returns true, else return false
+    """
+    @staticmethod
+    def exists_in_past_30_days(backend, post_title, ip):
+        page_visit = UniquePageVisit.from_ip(backend, post_title, ip)
+        if page_visit != None and page_visit._within_30_days():
+            return True
+
+        return False        
+
+    def _to_blob(self, backend):
+        content_bucket = backend._get_content_bucket()
+        the_blob = content_bucket.blob("unique30/" + self.post_title + "/" + self.ip)
+        return the_blob
+
+    def update_blob(self, backend):
+        the_blob = self._to_blob(backend)
+        with the_blob.open('w') as f:
+            the_json = self._encode_to_json()
+            f.write(the_json)
+
+        return the_blob
+
+    def _delete_blob(self, backend):
+        the_blob = self._to_blob(backend)
+        the_blob.delete()
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, UniquePageVisit) and
+            self.date == other.date and
+            self.ip == other.ip and
+            self.post_title == other.post_title
+            )
+    

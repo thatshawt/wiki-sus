@@ -1,5 +1,6 @@
 from flask import render_template, send_file, request, abort, redirect, url_for, flash
 from flaskr import backend
+from flaskr.backend import UniquePageVisit
 from flaskr.user_list import User_List
 from flask_login import login_required, LoginManager, login_user, logout_user, current_user
 from google.cloud import storage
@@ -76,28 +77,35 @@ def make_endpoints(app):
                                 current_user=current_user)
         elif request.method == 'POST':
             
+            sort_by_rank = request.form.get("sort_by_rank")
             crewmate = request.form.get("crewmate")
             imposter = request.form.get("imposter")
             task = request.form.get("task")
             location = request.form.get("location")
             terminology = request.form.get("terminology")
 
-            categories = []
-            if crewmate:
-                categories.append("Crewmate")
-            if imposter:
-                categories.append("Imposter")
-            if task:
-                categories.append("Tasks")
-            if location:
-                categories.append("Location")
-            if terminology:
-                categories.append("Terminology")
+            page_names = None
+
+            if sort_by_rank: # sort by rank
+                page_names = backend.page_names_sorted_by_rank()
+            else: # or filter by category
+                categories = []
+                if crewmate:
+                    categories.append("Crewmate")
+                if imposter:
+                    categories.append("Imposter")
+                if task:
+                    categories.append("Tasks")
+                if location:
+                    categories.append("Location")
+                if terminology:
+                    categories.append("Terminology")
 
 
-            page_names = backend.filter_categories(categories)
-            if not page_names:
-                page_names = backend.get_all_page_names()
+                page_names = backend.filter_categories(categories)
+                if not page_names:
+                    page_names = backend.get_all_page_names()
+
             pages = []
             
             for page_name in page_names:
@@ -116,6 +124,8 @@ def make_endpoints(app):
 
         if content == None:
             abort(404)
+
+        UniquePageVisit.on_visit_page(backend, page, request.environ['REMOTE_ADDR'])
 
         return render_template("wikipage.html",
                                post_title=page,
@@ -153,7 +163,7 @@ def make_endpoints(app):
                                     title = "Send Message",
                                     users_list = users_lst,
                                     sent_message = True)
-        
+
     @app.route("/signup", methods=['POST', 'GET'])
     def signup():  # FIXED signup
         if request.method == 'GET':

@@ -40,22 +40,6 @@ def test_upload_get__logged_out(anon_client):
 
 @patch('flaskr.pages.backend')
 def test_upload_get__logged_in(backendMock, anon_client):
-    backendMock.sign_in.return_value = Truegit 
-    with anon_client:
-        resp1 = anon_client.post("/login",
-                                 data=dict(username='testtest',
-                                           password='testtest'),
-                                 follow_redirects=True)
-
-        assert b'''Hello there testtest!''' in resp1.data
-
-        resp = anon_client.get("/upload", follow_redirects=True)
-        # assert resp.status_code == 200
-        assert b'''Post Title''' in resp.data
-
-
-@patch('flaskr.pages.backend')
-def test_upload_get__logged_in(backendMock, anon_client):
     backendMock.sign_in.return_value = True
     with anon_client:
         resp1 = anon_client.post("/login",
@@ -68,7 +52,6 @@ def test_upload_get__logged_in(backendMock, anon_client):
         resp = anon_client.get("/upload", follow_redirects=True)
         # assert resp.status_code == 200
         assert b'''Post Title''' in resp.data
-
 
 def test_upload_post_logged_out(anon_client):
     resp = anon_client.post("/upload", follow_redirects=True)
@@ -89,12 +72,14 @@ def test_pages_get(backendMock, anon_client):
     assert b'''foo''' in resp.data
     assert b'''bar''' in resp.data
 
-
 @patch('flaskr.pages.backend')
-def test_pages2_get__exist(backendMock, anon_client):
-    backendMock.get_wiki_page.return_value = "roblox"
+@patch('flaskr.pages.UniquePageVisit')
+def test_pages2_get__exist(backendMock, visitMock, anon_client):
+    # backendMock.get_wiki_page.return_value = "ROBLOXROBLOXROBLOX"
+    # visitMock.on_visit_page
 
     resp = anon_client.get("/pages/roblox/", follow_redirects=True)
+    # print(resp.data)
     assert b'''roblox''' in resp.data
 
 
@@ -195,3 +180,24 @@ def test_logout_get__logged_in(backendMock, anon_client):
 def test_logout_get__logged_out(anon_client):
     resp = anon_client.get("/logout", follow_redirects=True)
     assert b'''Please log in to access this page''' in resp.data
+
+
+@patch("flaskr.pages.backend")
+def test_pages_sorted_by_rank(backendMock, anon_client):
+
+    backendMock.page_names_sorted_by_rank.return_value = ['Popular1', 'Popular2']
+
+    resp = anon_client.post("/pages/", 
+                            data=dict(sort_by_rank='awd'),
+                                    follow_redirects=True)
+
+    print(resp.data)
+    
+    assert b'''<ul>
+    
+        <li><a href="/pages/Popular1/">Popular1</a></li>
+    
+        <li><a href="/pages/Popular2/">Popular2</a></li>
+    
+</ul>'''in resp.data
+
