@@ -29,6 +29,7 @@ def make_endpoints(app):
     # go to a specific route on the project's website.
     @app.route("/")
     def home():
+        
         return render_template("main.html",
                                title='home',
                                current_user=current_user)
@@ -57,20 +58,55 @@ def make_endpoints(app):
                                david_image=backend.get_image("david_image"),
                                carson_image=backend.get_image("carson_image"))
 
-    @app.route("/pages/")
+    @app.route("/pages/", methods=['GET','POST'])
     def pages():
-        pages = []
-        page_names = backend.get_all_page_names()
-        for page_name in page_names:
-            pages.append({
-                "name": page_name,
-                "link": "/pages/" + page_name + "/"
-            })
-        return render_template("pages.html",
-                               pages=pages,
-                               title='pages',
-                               current_user=current_user)
+        if request.method == 'GET':
+            pages = []
+            page_names = backend.get_all_page_names()
+            for page_name in page_names:
+                pages.append({
+                    "name": page_name,
+                    "link": "/pages/" + page_name + "/"
+                })
+            return render_template("pages.html",
+                                pages=pages,
+                                title='pages',
+                                current_user=current_user)
+        elif request.method == 'POST':
+            
+            crewmate = request.form.get("crewmate")
+            imposter = request.form.get("imposter")
+            task = request.form.get("task")
+            location = request.form.get("location")
+            terminology = request.form.get("terminology")
 
+            categories = []
+            if crewmate:
+                categories.append("Crewmate")
+            if imposter:
+                categories.append("Imposter")
+            if task:
+                categories.append("Tasks")
+            if location:
+                categories.append("Location")
+            if terminology:
+                categories.append("Terminology")
+
+
+            page_names = backend.filter_categories(categories)
+            if not page_names:
+                page_names = backend.get_all_page_names()
+            pages = []
+            
+            for page_name in page_names:
+                pages.append({
+                    "name": page_name,
+                    "link": "/pages/" + page_name + "/"
+                })
+            return render_template("pages.html",
+                                pages=pages,
+                                title='pages',
+                                current_user=current_user)
     @app.route("/pages/<page>/")
     def pages2(page):
         content = backend.get_wiki_page(page)

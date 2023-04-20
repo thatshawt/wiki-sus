@@ -75,6 +75,72 @@ class Backend:
         # List is returned
         return names
 
+    #Returns a dictionary containing the categories data
+    def get_categories(self):
+        categories = dict()
+        
+        content_bucket = self._get_content_bucket()
+        categories_blob = content_bucket.blob("categories/categories.csv")
+
+        """
+        Categories are harcoded in a CSV formatted as follows: 
+        <Category name>,<page1>,<page2>,<page3>
+        <Category name>,<page1>
+        """
+        #Opening the blob as a file, convert each line into one key/value pair
+        with categories_blob.open('r') as file:
+            lines = file.readlines()
+            
+            for line in lines:
+                currCategory = [value.strip() for value in line.split(",")]
+                
+                #Key is the first value, values is the rest
+                key = currCategory[0]
+                values = set(currCategory[1:])             
+                categories[key] = values   
+
+        return categories
+
+    def save_categories(self, categories):
+
+        #categories is a dictionary containing category data
+        content_bucket = self._get_content_bucket()
+        categories_blob = content_bucket.blob("categories/categories.csv")
+
+
+        #"Crewmate,Crewmate,Tasks,Emergency Meeting\nImposter,Emergency Meeting,Kill,Sabotage,Sus,Venting\nTask,Tasks\nLocation,Security,Emergency Meeting\nTerminology,Sus,Venting\n"
+        """
+        categories = {
+            "Crewmate" : {"Crewmate", "Tasks", "Emergency Meeting"},
+            "Imposter" : {"Emergency Meeting", "Kill", "Sabotage", "Sus", "Venting"},
+            "Tasks"    : {"Tasks"},
+            "Location" : {"Security", "Emergency Meeting"},
+            "Terminology" : {"Sus", "Venting"}
+        }
+        """
+
+        with categories_blob.open('w') as file:
+            for key, values in categories.items():
+                values_string = ','.join(str(value) for value in values)
+                file.write(f"{key},{values_string}\n")
+
+        return 
+
+    #Given a set of categories selected by user, generate all pages that are in ALL the selected. 
+    def filter_categories(self, user_categories):
+        #None selected, return everthing
+        
+        if not user_categories: 
+            return self.get_all_page_names()
+        categories = self.get_categories()
+        filtered_pages = categories[user_categories[0]] 
+        for user_category in user_categories:
+            category_pages = categories[user_category]
+            filtered_pages = filtered_pages.intersection(category_pages)
+
+        return filtered_pages
+
+
     #post_image is already in base64
     def upload(self, post_title, post_content, post_image):
 
