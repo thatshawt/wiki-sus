@@ -40,22 +40,6 @@ def test_upload_get__logged_out(anon_client):
 
 @patch('flaskr.pages.backend')
 def test_upload_get__logged_in(backendMock, anon_client):
-    backendMock.sign_in.return_value = Truegit 
-    with anon_client:
-        resp1 = anon_client.post("/login",
-                                 data=dict(username='testtest',
-                                           password='testtest'),
-                                 follow_redirects=True)
-
-        assert b'''Hello there testtest!''' in resp1.data
-
-        resp = anon_client.get("/upload", follow_redirects=True)
-        # assert resp.status_code == 200
-        assert b'''Post Title''' in resp.data
-
-
-@patch('flaskr.pages.backend')
-def test_upload_get__logged_in(backendMock, anon_client):
     backendMock.sign_in.return_value = True
     with anon_client:
         resp1 = anon_client.post("/login",
@@ -68,7 +52,6 @@ def test_upload_get__logged_in(backendMock, anon_client):
         resp = anon_client.get("/upload", follow_redirects=True)
         # assert resp.status_code == 200
         assert b'''Post Title''' in resp.data
-
 
 def test_upload_post_logged_out(anon_client):
     resp = anon_client.post("/upload", follow_redirects=True)
@@ -202,7 +185,19 @@ def test_logout_get__logged_out(anon_client):
 @patch("flaskr.pages.backend")
 def test_pages_sorted_by_rank(backendMock, anon_client):
 
-    backendMock.page_names_sorted_by_rank.return_value = ['Popular1', 'Popular2' ]
-    resp = anon_client.get("/pages_sorted_rank", follow_redirects=True)
-    assert b'''<li><a href="/pages/Popular1/">Popular1</a></li>\n    \n        <li><a href="/pages/Popular2/">Popular2</a></li>''' in resp.data
+    backendMock.page_names_sorted_by_rank.return_value = ['Popular1', 'Popular2']
+
+    resp = anon_client.post("/pages/", 
+                            data=dict(sort_by_rank='awd'),
+                                    follow_redirects=True)
+
+    print(resp.data)
+    
+    assert b'''<ul>
+    
+        <li><a href="/pages/Popular1/">Popular1</a></li>
+    
+        <li><a href="/pages/Popular2/">Popular2</a></li>
+    
+</ul>'''in resp.data
 
