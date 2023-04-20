@@ -1,4 +1,5 @@
-from flaskr.backend import Backend
+from flaskr.backend import Backend, UniquePageVisit
+from datetime import datetime
 import unittest
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -462,6 +463,36 @@ class TestBackend(unittest.TestCase):
 
         assert backend.get_user_message_list(receiver) == expected
 
+    # decode to json works
+    def test__unique_page_visit_json_decode(self):
+        visit_left = UniquePageVisit("fottnite", "127.0.0.1", datetime.fromisoformat("2023-04-20T07:39:26.620759"))
+        visit_right = UniquePageVisit.decode_from_json(b'{"post_title": "fottnite", "ip": "127.0.0.1", "date": "2023-04-20T07:39:26.620759"}')
+
+        assert visit_left == visit_right
+
+    # encode from json works
+    def test__unique_page_visit_json_encode(self):
+        visit = UniquePageVisit("fottnite", "127.0.0.1", datetime.fromisoformat("2023-04-20T07:39:26.620759"))
+        the_json = visit._encode_to_json()
+        assert the_json == r'{"post_title": "fottnite", "ip": "127.0.0.1", "date": "2023-04-20T07:39:26.620759"}'
+
+    # UniquePageVisit.from_ip date not within 30 days -> exists_in_past_30_days return false
+    @patch("flaskr.backend.UniquePageVisit.from_ip")
+    def test__not_within_30_days(self, fromIpMock):
+        past30_date = datetime.fromisoformat("1876-04-20T07:39:26.620759")
+        past30_visit = UniquePageVisit("fottnite", "127.0.0.1", past30_date)
+        fromIpMock.return_value = past30_visit
+
+        assert UniquePageVisit.exists_in_past_30_days(None, None, None) == False
+
+    # UniquePageVisit.from_ip date within 30 days -> exists_in_past_30_days return true
+    @patch("flaskr.backend.UniquePageVisit.from_ip")
+    def test__within_30_days(self, fromIpMock):
+        within30_date = datetime.now()
+        within30_visit = UniquePageVisit("fottnite", "127.0.0.1", within30_date)
+        fromIpMock.return_value = within30_visit
+
+        assert UniquePageVisit.exists_in_past_30_days(None, None, None) == True
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
