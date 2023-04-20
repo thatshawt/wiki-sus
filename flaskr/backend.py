@@ -1,6 +1,7 @@
 from hashlib import sha256
 from google.cloud import storage
 from flask_login import current_user
+from flaskr.user import User
 import base64
 
 
@@ -128,16 +129,15 @@ class Backend:
     #Given a set of categories selected by user, generate all pages that are in ALL the selected. 
     def filter_categories(self, user_categories):
         #None selected, return everthing
-        backend = Backend()
+        
         if not user_categories: 
-            return backend.get_all_page_names()
-        categories = backend.get_categories()
+            return self.get_all_page_names()
+        categories = self.get_categories()
         filtered_pages = categories[user_categories[0]] 
         for user_category in user_categories:
             category_pages = categories[user_category]
             filtered_pages = filtered_pages.intersection(category_pages)
 
-        backend.save_categories(categories)
         return filtered_pages
 
 
@@ -321,6 +321,13 @@ class Backend:
                 break
 
         return valid_username and valid_password
+
+
+    def create_message(self, message : str, sender_user : User, receiver_user : User):
+        receiver_user.append_message(message, sender_user.username)
+        
+    def get_user_message_list(self, user: User) -> list :
+        return user.get_message_list()
 
     # Function just for TESTING purposes
     def test(self):

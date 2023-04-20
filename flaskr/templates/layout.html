@@ -36,11 +36,12 @@
                 {% endfor %}
             
             {% else %}
-                {% for element in ["home", "pages", "upload", "about"] %}
-                    {% if element == title %}
-                    <li class="active" id="{{element}}"><a  href="{{ url_for(element)}}">{{element}}</a></li>
+                {% for element, elementname in [("home", "home"), ("pages", "pages"), ("upload", "upload"), 
+                ("about", "about"), ("messages", "messages"), ("sendmessage", "Send Message")] %}
+                    {% if elementname == title %}
+                    <li class="active" id="{{element}}"><a  href="{{ url_for(element)}}">{{elementname}}</a></li>
                     {% else %}
-                    <li id="{{element}}" ><a href="{{ url_for(element)}}">{{element}}</a></li>
+                    <li id="{{element}}" ><a href="{{ url_for(element)}}">{{elementname}}</a></li>
                     {% endif %}
                 {% endfor %}
                     

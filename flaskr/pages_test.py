@@ -38,7 +38,9 @@ def test_upload_get__logged_out(anon_client):
     assert b'''Please log in to access this page.''' in resp.data
 
 
-def test_upload_get__logged_in(anon_client):
+@patch('flaskr.pages.backend')
+def test_upload_get__logged_in(backendMock, anon_client):
+    backendMock.sign_in.return_value = Truegit 
     with anon_client:
         resp1 = anon_client.post("/login",
                                  data=dict(username='testtest',
@@ -71,7 +73,6 @@ def test_upload_get__logged_in(backendMock, anon_client):
 def test_upload_post_logged_out(anon_client):
     resp = anon_client.post("/upload", follow_redirects=True)
     assert b'''Please log in to access this page''' in resp.data
-
 
 @patch('flaskr.pages.backend')
 def test_about_get(backendMock, anon_client):
@@ -172,7 +173,6 @@ def test_login_post__fail(backendMock, anon_client):
     resp = anon_client.post("/login", follow_redirects=True)
 
     assert b'''User or password is not correct''' in resp.data
-
 
 @patch("flaskr.pages.backend")
 def test_logout_get__logged_in(backendMock, anon_client):

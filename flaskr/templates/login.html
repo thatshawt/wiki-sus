@@ -2,15 +2,26 @@
 
 {% block content %}
 <form method="POST" action="">
-    <div>
-        <label for="username">Username</label>
-        <input name="username" type="text" required>    
+    <div class="field">
+        <label for="username" class="label">Username</label>
+        <div class="columns">
+            <div class="column is-two-thirds">
+                <div class="control">
+                    <input name="username" type="text"  class="input" placeholder="Username" required>    
+                </div>
+            </div>
+        </div>
+    
+        <label for="password" class="label">Password</label>
+        <div class="columns">
+            <div class="column is-two-thirds">
+                <div class="control">
+                    <input name="password" type="password" class="input" placeholder="Password" required>
+                </div>
+            </div>
+        </div>
+        <button type="submit" value="log in">Log In</button>
     </div>
-    <div>
-        <label for="password">Password</label>
-        <input name="password" type="password" required>
-    </div>
-    <button type="submit" value="log in">log in</button>
 
 </form>
 {% endblock content %}
