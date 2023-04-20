@@ -469,5 +469,11 @@ class UniquePageVisit:
         the_blob = self._to_blob(backend)
         the_blob.delete()
 
-
+    def __eq__(self, other):
+        return (
+            isinstance(other, UniquePageVisit) and
+            self.date == other.date and
+            self.ip == other.ip and
+            self.post_title == other.post_title
+            )
     
