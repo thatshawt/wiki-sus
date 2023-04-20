@@ -1,6 +1,7 @@
 from hashlib import sha256
 from google.cloud import storage
 from flask_login import current_user
+from flaskr.user import User
 import base64
 
 
@@ -237,6 +238,13 @@ class Backend:
                 break
 
         return valid_username and valid_password
+
+
+    def create_message(self, message : str, sender_user : User, receiver_user : User):
+        receiver_user.append_message(message, sender_user.username)
+        
+    def get_user_message_list(self, user: User) -> list :
+        return user.get_message_list()
 
     # Function just for TESTING purposes
     def test(self):

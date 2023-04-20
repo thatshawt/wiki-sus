@@ -1,0 +1,27 @@
+{% extends "layout.html"%}
+
+{% block content %}
+
+<div> 
+    <h2>Click the username to see their messages</h2>
+</div>
+<div>
+    <a href="{{url_for('sendmessage')}}">Click here if you wish to send someone a message!</a>
+</div>
+<br>
+{% if message_list %}
+
+<div>
+    {% for author in message_list.keys()%}
+    <p>Message from <a href="/messages/{{author}}">{{ author }}</a></p>
+    {% endfor %}
+</div>
+{% else %}
+<div>
+    <h2 style="color:red;">Sorry! You currently have no messages.</h2>
+</div>
+
+{% endif %}
+
+
+{% endblock content %}
