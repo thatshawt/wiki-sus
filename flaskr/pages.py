@@ -218,9 +218,29 @@ def make_endpoints(app):
         return 0
 
 
-    @app.route('/messages/<user>', methods=['GET'])
+    @app.route('/messages/<user>', methods=['GET', 'POST'])
     @login_required
     def message_by_user(user):
+        if request.method == 'POST':
+
+                #Active users information for sending another message
+                users_dict = user_list.get_active_users()
+                users_lst = list(users_dict.values())
+                users_lst.remove(users_dict[current_user.get_id()])
+
+                #Message information
+                message = str(request.form["content"])
+                receiver_id = user_list.active_sessions[user]
+                receiver_user = users_dict[receiver_id]
+                sender_user = users_dict[current_user.get_id()]
+                backend.create_message(message, sender_user, receiver_user)
+
+                conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
+                return render_template("messages_author.html", 
+                                        title = "chat",
+                                        author = user,
+                                        messages = conversation_list[user])
+
         conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
         return render_template('messages_author.html', author=user, messages=conversation_list[user])
 
