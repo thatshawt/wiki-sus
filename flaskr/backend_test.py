@@ -444,7 +444,7 @@ class TestBackend(unittest.TestCase):
         
         # Expected result
         expected = 'Hey Mike!'
-        assert receiver.get_user_conversation_list()['Joe'][0].get_message() == expected
+        assert receiver.get_conversation_list()['Joe'][0].get_message() == expected
 
     def test_get_user_messages(self):
 

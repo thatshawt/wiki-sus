@@ -179,6 +179,7 @@ def make_endpoints(app):
             elif answer == 'ALREADY EXISTS':
                 flash('User already exists. Try a different one!')
                 return redirect(url_for('signup'))
+            flash("You've successfully created an account!")
             return redirect(url_for('home'))
 
     @app.route('/login', methods=['POST', 'GET'])
