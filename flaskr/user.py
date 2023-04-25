@@ -7,8 +7,6 @@ class User(UserMixin):
     def __init__(self, id, username):
         self.id = str(id)
         self.username = username
-        # message dictionary -> {AUTHOR : list of MESSAGE objects}
-        self.message_list = defaultdict(list)
 
         # Conversation dictionary -> {Who you're sending to -> Messages}
         self.conversations = defaultdict(list)
@@ -29,9 +27,6 @@ class User(UserMixin):
     def receive_message(self, message, sender_user):
         message_object = Message(sender_user, message)
         self.conversations[sender_user].append(message_object)
-
-    def get_message_list(self):
-        return self.message_list
 
     def get_user_conversation_list(self):
         return self.conversations
