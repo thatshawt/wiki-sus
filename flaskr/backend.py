@@ -325,7 +325,9 @@ class Backend:
 
 
     def create_message(self, message : str, sender_user : User, receiver_user : User):
+        # Call sent_message for the sender
         sender_user.sent_message(message, receiver_user.username)
+        # Call receive message for the receiver
         receiver_user.receive_message(message, sender_user.username)
         
     def get_user_message_list(self, user: User) -> list :

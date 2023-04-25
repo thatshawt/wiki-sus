@@ -208,14 +208,12 @@ def make_endpoints(app):
         return redirect(url_for('login'))
 
 
-    @app.route('/messages', methods=['POST', 'GET'])
+    @app.route('/messages', methods=['GET'])
     @login_required
     def messages():
         if request.method == 'GET':
             conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
-            print(conversation_list)
             return render_template('messages.html', message_list=conversation_list, title="messages")
-        return 0
 
 
     @app.route('/messages/<user>', methods=['GET', 'POST'])

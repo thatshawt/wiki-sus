@@ -24,9 +24,12 @@ class User(UserMixin):
         message_object = Message(self.username, message)
         self.conversations[receiver_user].append(message_object)
 
+    # Both sent and receive methods must be called together to create a sent message for the sender
+    # And the receiver to add it to the list.
+
     def receive_message(self, message, sender_user):
         message_object = Message(sender_user, message)
         self.conversations[sender_user].append(message_object)
 
-    def get_user_conversation_list(self):
+    def get_conversation_list(self):
         return self.conversations
