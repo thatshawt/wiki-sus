@@ -334,7 +334,7 @@ class Backend:
         return user.get_message_list()
 
     def get_user_conversation_list(self, user: User) -> list :
-        return user.get_user_conversation_list()
+        return user.get_conversation_list()
 
     # Function just for TESTING purposes
     def test(self):
