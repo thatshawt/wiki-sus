@@ -158,7 +158,6 @@ def make_endpoints(app):
             backend.create_message(message, sender_user, receiver_user)
 
 
-
             return render_template("sendmessage.html", 
                                     title = "Send Message",
                                     users_list = users_lst,
@@ -213,16 +212,17 @@ def make_endpoints(app):
     @login_required
     def messages():
         if request.method == 'GET':
-            message_list = backend.get_user_message_list(user_list.retrieve_user(current_user.get_id()))
-            return render_template('messages.html', message_list=message_list, title="messages")
+            conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
+            print(conversation_list)
+            return render_template('messages.html', message_list=conversation_list, title="messages")
         return 0
 
 
     @app.route('/messages/<user>', methods=['GET'])
     @login_required
     def message_by_user(user):
-        message_list = backend.get_user_message_list(user_list.retrieve_user(current_user.get_id()))
-        return render_template('messages_author.html', author=user, messages=message_list[user])
+        conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
+        return render_template('messages_author.html', author=user, messages=conversation_list[user])
 
 
 

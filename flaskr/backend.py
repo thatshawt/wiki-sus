@@ -325,10 +325,14 @@ class Backend:
 
 
     def create_message(self, message : str, sender_user : User, receiver_user : User):
-        receiver_user.append_message(message, sender_user.username)
+        sender_user.sent_message(message, receiver_user.username)
+        receiver_user.receive_message(message, sender_user.username)
         
     def get_user_message_list(self, user: User) -> list :
         return user.get_message_list()
+
+    def get_user_conversation_list(self, user: User) -> list :
+        return user.get_user_conversation_list()
 
     # Function just for TESTING purposes
     def test(self):

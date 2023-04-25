@@ -2,6 +2,8 @@ from flaskr import pages
 
 from flask import Flask
 
+from flask_socketio import SocketIO
+
 import logging
 
 logging.basicConfig(level=logging.DEBUG)

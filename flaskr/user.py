@@ -9,6 +9,10 @@ class User(UserMixin):
         self.username = username
         # message dictionary -> {AUTHOR : list of MESSAGE objects}
         self.message_list = defaultdict(list)
+
+        # Conversation dictionary -> {Who you're sending to -> Messages}
+        self.conversations = defaultdict(list)
+
         self._is_admin = False
 
         if username == 'admin':
@@ -18,9 +22,16 @@ class User(UserMixin):
         self.id = new_id
 
     # Message : str and sender_user : User object
-    def append_message(self, message, sender_user):
+    def sent_message(self, message, receiver_user):
+        message_object = Message(self.username, message)
+        self.conversations[receiver_user].append(message_object)
+
+    def receive_message(self, message, sender_user):
         message_object = Message(sender_user, message)
-        self.message_list[sender_user].append(message_object)
+        self.conversations[sender_user].append(message_object)
 
     def get_message_list(self):
         return self.message_list
+
+    def get_user_conversation_list(self):
+        return self.conversations
