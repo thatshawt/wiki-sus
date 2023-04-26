@@ -158,10 +158,6 @@ def make_endpoints(app):
             backend.create_message(message, sender_user, receiver_user)
             url = 'messages'
             return redirect(url_for(url) + '/' + receiver_user.username)
-            # return render_template("sendmessage.html", 
-            #                         title = "Send Message",
-            #                         users_list = users_lst,
-            #                         sent_message = True)
 
     @app.route("/signup", methods=['POST', 'GET'])
     def signup():  # FIXED signup

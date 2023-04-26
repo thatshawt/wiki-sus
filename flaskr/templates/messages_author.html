@@ -18,7 +18,7 @@
     <form action = "/messages/{{author}}" method = "POST"  >
     <div class="flex">
         <label for="content"></label> <br>
-        <input class="messageinput" type="text" name="content" required> <br>
+        <input class="messageinput" maxlength="100" type="text" name="content" required> <br>
         <button id="submit"> Send </button>
         
     </div>
