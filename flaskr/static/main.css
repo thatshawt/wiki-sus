@@ -58,3 +58,122 @@
 .flashes {
     color: red;
 }
+
+.containerLeft {
+    border: 2px solid #ffffff;
+    background-color: #ffffff;
+    border-radius: 5px;
+    padding: 0px 10px 10px 0px ;
+    margin: 15px 100px 15px 10px; 
+    box-shadow: 5px 5px; 
+}
+
+.containerRight {
+    border: 2px solid #ffffff;
+    background-color: #ffffff;
+    border-radius: 5px;
+    padding: 0px 0px 10px 10px;
+    margin: 15px 40px 15px 100px;
+    box-shadow: 5px 5px;
+    text-align: right;
+}
+
+.containerRight::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.chatcontainer {
+    border: 4px solid #000000;
+    background-color: rgba(84, 108, 131, 0.5);
+    border-radius: 5px;
+    padding: 10px;
+    margin: auto;
+    max-width: 70%;
+}
+
+.chatheader {
+    margin: auto;
+    text-align: center;
+    font-size: 20px;
+    padding-bottom:20px;
+}
+
+.messageinput {
+    width: 100%;
+    padding: 15px 20px;
+    margin: 8px 0px;
+    box-sizing: border-box;
+    border: 4px solid black;
+    border-radius: 5px;
+}
+
+.flex {
+    display: flex;
+    flex-direction: row;
+}
+
+.messageinput {
+    flex-grow:2;
+}
+
+.messageinput:focus {
+    outline: none;
+}
+
+form:focus-within {
+    outline: 1px solidblue;
+}
+
+button {
+    border: 1px #000000;
+    background: #0076e3;
+    color: white;
+    margin: 8px 10px;
+    font-size: 20px;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100px;
+    height: 60px;
+}
+
+button:hover {
+    background-color: #2585df
+}
+
+#chatimageUser {
+    float:right;
+    max-width: 65px;    
+    max-height: 50px;
+    width: 100%;
+    transform: scaleX(-1);
+}
+
+#chatimageOther {
+    float:left;
+    max-width: 65px;
+    max-height: 50px;
+    width: 100%;
+}
+
+.timefloatLeft {
+    float: left;
+}
+
+.timefloatRight {
+    float: right;
+}
+
+.chatuserfont {
+    font-family: Helvetica, sans-serif;
+    color: white;
+    -webkit-text-stroke: 1.5px #000000;
+    font-size: 20px;
+}
+
+.chatfont {
+    font-family: Helvetica, sans-serif;
+    font-size: 18px;
+}
+
