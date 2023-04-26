@@ -13,7 +13,7 @@
 
 <div>
     {% for author in message_list.keys()%}
-    <p>Message from <a href="/messages/{{author}}">{{ author }}</a></p>
+    <p>Conversation with <a href="/messages/{{author}}">{{ author }}</a></p>
     {% endfor %}
 </div>
 {% else %}

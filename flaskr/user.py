@@ -7,8 +7,10 @@ class User(UserMixin):
     def __init__(self, id, username):
         self.id = str(id)
         self.username = username
-        # message dictionary -> {AUTHOR : list of MESSAGE objects}
-        self.message_list = defaultdict(list)
+
+        # Conversation dictionary -> {Who you're sending to -> Messages}
+        self.conversations = defaultdict(list)
+
         self._is_admin = False
 
         if username == 'admin':
@@ -18,9 +20,16 @@ class User(UserMixin):
         self.id = new_id
 
     # Message : str and sender_user : User object
-    def append_message(self, message, sender_user):
-        message_object = Message(sender_user, message)
-        self.message_list[sender_user].append(message_object)
+    def sent_message(self, message, receiver_user):
+        message_object = Message(self.username, message)
+        self.conversations[receiver_user].append(message_object)
 
-    def get_message_list(self):
-        return self.message_list
+    # Both sent and receive methods must be called together to create a sent message for the sender
+    # And the receiver to add it to the list.
+
+    def receive_message(self, message, sender_user):
+        message_object = Message(sender_user, message)
+        self.conversations[sender_user].append(message_object)
+
+    def get_conversation_list(self):
+        return self.conversations

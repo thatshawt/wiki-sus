@@ -156,13 +156,8 @@ def make_endpoints(app):
             receiver_user = users_dict[request.form["recipient"]]
             sender_user = users_dict[current_user.get_id()]
             backend.create_message(message, sender_user, receiver_user)
-
-
-
-            return render_template("sendmessage.html", 
-                                    title = "Send Message",
-                                    users_list = users_lst,
-                                    sent_message = True)
+            url = 'messages'
+            return redirect(url_for(url) + '/' + receiver_user.username)
 
     @app.route("/signup", methods=['POST', 'GET'])
     def signup():  # FIXED signup
@@ -180,7 +175,8 @@ def make_endpoints(app):
             elif answer == 'ALREADY EXISTS':
                 flash('User already exists. Try a different one!')
                 return redirect(url_for('signup'))
-            return "SUCCESFULL"
+            flash("You've successfully created an account!")
+            return redirect(url_for('home'))
 
     @app.route('/login', methods=['POST', 'GET'])
     def login():
@@ -209,20 +205,44 @@ def make_endpoints(app):
         return redirect(url_for('login'))
 
 
-    @app.route('/messages', methods=['POST', 'GET'])
+    @app.route('/messages', methods=['GET'])
     @login_required
     def messages():
         if request.method == 'GET':
-            message_list = backend.get_user_message_list(user_list.retrieve_user(current_user.get_id()))
-            return render_template('messages.html', message_list=message_list, title="messages")
-        return 0
+            conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
+            return render_template('messages.html', message_list=conversation_list, title="messages")
 
 
-    @app.route('/messages/<user>', methods=['GET'])
+    @app.route('/messages/<user>', methods=['GET', 'POST'])
     @login_required
     def message_by_user(user):
-        message_list = backend.get_user_message_list(user_list.retrieve_user(current_user.get_id()))
-        return render_template('messages_author.html', author=user, messages=message_list[user])
+        amongus1 = backend.get_image('char1')
+        amongus2 = backend.get_image('char3_2')
+        if request.method == 'POST':
+
+                #Active users information for sending another message
+                users_dict = user_list.get_active_users()
+                users_lst = list(users_dict.values())
+                users_lst.remove(users_dict[current_user.get_id()])
+
+                #Message information
+                message = str(request.form["content"])
+                receiver_id = user_list.active_sessions[user]
+                receiver_user = users_dict[receiver_id]
+                sender_user = users_dict[current_user.get_id()]
+                backend.create_message(message, sender_user, receiver_user)
+
+                conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
+                return render_template("messages_author.html", 
+                                        title = "chat",
+                                        author = user,
+                                        messages = conversation_list[user],
+                                        amongus1=amongus1,
+                                        amongus2=amongus2)
+        
+
+        conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
+        return render_template('messages_author.html', author=user, messages=conversation_list[user], amongus1=amongus1, amongus2=amongus2)
 
 
 

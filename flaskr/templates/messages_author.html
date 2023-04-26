@@ -2,14 +2,29 @@
 
 {% block content %}
 <br>
-<div style="padding-left:2em; padding-top:1em;">
-<h2 style="padding-left:2.2em;">Messages from {{author}}</h2>
-    <ul>
+<h2 class="chatheader"><b>Messages from {{author}}</b></h2>
+<div class="chatcontainer">
+    <ul >
         {% for msg in messages %}
-            <li style="padding:0.7em">{{msg.date}} | {{ msg.time }} <a><b>{{msg.author}}</b>: {{msg.message}}</a></li>
+            {% if msg.author != author%}
+            <div class="containerRight"> <span id="chatimageUser"><img src="data:image/png;base64, {{ amongus2 }}" alt="image"></span> <li> <span class="timefloatLeft"> {{msg.date}} | {{ msg.time }} 
+            </span> <span class="chatuserfont"><b>{{msg.author}}</b> </span> <span class="chatfont"> <br> {{msg.message}} </span> </li></div>
+            {% else %}
+            <div class="containerLeft"> <span id="chatimageOther"><img src="data:image/png;base64, {{ amongus1 }}" alt="image"></span> <li> <span class="timefloatRight"> {{msg.date}} | {{ msg.time }} 
+            </span> <span class="chatuserfont"><b>{{msg.author}}</b> </span> <span class="chatfont"> <br> {{msg.message}} </span> </li></div>
+            {% endif %}
         {% endfor %}
     </ul>
+    <form action = "/messages/{{author}}" method = "POST"  >
+    <div class="flex">
+        <label for="content"></label> <br>
+        <input class="messageinput" maxlength="100" type="text" name="content" required> <br>
+        <button id="submit"> Send </button>
+        
+    </div>
+    </form>
 </div>
-
-
+<img src="data:image/png;base64, {{ amongus1 }}" alt="image">
+<img style="float: right; transform: scaleX(-1); " src="data:image/png;base64, {{ amongus2 }}" alt="image">
 {% endblock content %}
+

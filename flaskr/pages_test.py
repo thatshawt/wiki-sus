@@ -103,7 +103,7 @@ def test_signup_post__success(mockBackendClass, anon_client):
     resp = anon_client.post("/signup",
                             data=dict(username='testtest', password='testtest'),
                             follow_redirects=True)
-    assert b'''SUCCESFULL''' in resp.data
+    assert b'''Hello fellow sussy bakas!''' in resp.data
 
 
 @patch('flaskr.pages.backend')

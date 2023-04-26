@@ -444,7 +444,7 @@ class TestBackend(unittest.TestCase):
         
         # Expected result
         expected = 'Hey Mike!'
-        assert receiver.get_message_list()['Joe'][0].get_message() == expected
+        assert receiver.get_conversation_list()['Joe'][0].get_message() == expected
 
     def test_get_user_messages(self):
 
@@ -456,12 +456,12 @@ class TestBackend(unittest.TestCase):
         receiver = User(2, "Mike")
 
         # Add message to the message list
-        receiver.append_message("Hey", sender)
+        receiver.sent_message("Hey", sender)
 
         # Expected outcome
-        expected = receiver.message_list
+        expected = receiver.conversations
 
-        assert backend.get_user_message_list(receiver) == expected
+        assert backend.get_user_conversation_list(receiver) == expected
 
     # decode to json works
     def test__unique_page_visit_json_decode(self):
