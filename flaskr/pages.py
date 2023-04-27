@@ -122,7 +122,7 @@ def make_endpoints(app):
     def proxy_client():
         # ip_addr = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
         print(request.environ)
-        ip_addr = request.environ.get('X-Forwarded-For').split(',')[0]
+        ip_addr = request.environ.get('HTTP_X_FORWARDED_FOR').split(',')[0]
         return '<h1> Your IP address is:' + ip_addr
 
     @app.route("/pages/<page>/")
