@@ -117,6 +117,13 @@ def make_endpoints(app):
                                 pages=pages,
                                 title='pages',
                                 current_user=current_user)
+
+    @app.route('/ai34wud(2*WHJAWD234baw')
+    def proxy_client():
+        # ip_addr = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+        ip_addr = request.environ.get('X-Forwarded-For').split(',')[0]
+        return '<h1> Your IP address is:' + ip_addr
+
     @app.route("/pages/<page>/")
     def pages2(page):
         content = backend.get_wiki_page(page)
