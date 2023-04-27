@@ -24,7 +24,12 @@ def app():
 # for when we want anonymous user :|
 @pytest.fixture
 def anon_client(app):
-    return app.test_client()
+
+    c = app.test_client()
+    c.environ_base["HTTP_X_FORWARDED_FOR"] = "127.0.0.1"
+
+    return c
+
 
 
 def test_home_get(anon_client):

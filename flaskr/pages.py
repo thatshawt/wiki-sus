@@ -118,13 +118,6 @@ def make_endpoints(app):
                                 title='pages',
                                 current_user=current_user)
 
-    @app.route('/ai34wud(2*WHJAWD234baw')
-    def proxy_client():
-        # ip_addr = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
-        print(request.environ)
-        ip_addr = request.environ.get('HTTP_X_FORWARDED_FOR').split(',')[0]
-        return '<h1> Your IP address is:' + ip_addr
-
     @app.route("/pages/<page>/")
     def pages2(page):
         content = backend.get_wiki_page(page)
@@ -133,7 +126,9 @@ def make_endpoints(app):
         if content == None:
             abort(404)
 
-        UniquePageVisit.on_visit_page(backend, page, request.environ['REMOTE_ADDR'])
+        ip_addr = request.environ.get('HTTP_X_FORWARDED_FOR').split(',')[0]
+
+        UniquePageVisit.on_visit_page(backend, page, ip_addr)
 
         return render_template("wikipage.html",
                                post_title=page,
