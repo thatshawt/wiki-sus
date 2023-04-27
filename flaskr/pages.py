@@ -233,12 +233,8 @@ def make_endpoints(app):
                 backend.create_message(message, sender_user, receiver_user)
 
                 conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
-                return render_template("messages_author.html", 
-                                        title = "chat",
-                                        author = user,
-                                        messages = conversation_list[user],
-                                        amongus1=amongus1,
-                                        amongus2=amongus2)
+                url = 'messages'
+                return redirect(url_for(url) + '/' + receiver_user.username)
         
 
         conversation_list = backend.get_user_conversation_list(user_list.retrieve_user(current_user.get_id()))
